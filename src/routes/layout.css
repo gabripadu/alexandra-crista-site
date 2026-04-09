@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Alexandra Crîsta landing — activat doar când există clasa pe <html> */
+html.ac-landing {
+	@apply bg-[#030303];
+}
+
+html.ac-landing body {
+	font-family: Inter, system-ui, sans-serif;
+	cursor: none;
+	overflow-x: hidden;
+}
+
+html.ac-landing h1,
+html.ac-landing h2,
+html.ac-landing h3,
+html.ac-landing .font-syne {
+	font-family: Syne, system-ui, sans-serif;
+}
+
+@keyframes ac-spin-slow {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+html.ac-landing .ac-animate-spin-slow {
+	animation: ac-spin-slow 15s linear infinite;
+}
+
+html.ac-landing ::-webkit-scrollbar {
+	width: 4px;
+}
+html.ac-landing ::-webkit-scrollbar-track {
+	background: #030303;
+}
+html.ac-landing ::-webkit-scrollbar-thumb {
+	background: #333;
+}

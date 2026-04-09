@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ro" class="bg-[#030303]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexandra Crîsta | Avant-Garde Fashion</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            cursor: none;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .font-syne {
+            font-family: 'Syne', sans-serif;
+        }
+        .text-outline {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+            color: transparent;
+        }
+        #cursor-dot {
+            mix-blend-difference: difference;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+        }
+        .horizontal-container {
+            display: flex;
+            width: 400%; /* Ajustat pentru numărul de slide-uri */
+            height: 100vh;
+        }
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.05;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+        .loader-bar {
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #030303; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- Cursor Spotlight -->
+    <div id="cursor-dot" class="fixed top-0 left-0 w-8 h-8 bg-white rounded-full z-[9999] hidden md:block"></div>
+
+    <!-- Preloader -->
+    <div id="loader" class="fixed inset-0 bg-white z-[10000] flex flex-col items-center justify-center text-black">
+        <div class="relative overflow-hidden mb-8">
+            <span class="text-[20vw] font-black opacity-[0.03] select-none leading-none">CRÎSTA</span>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <span id="loader-percent" class="text-8xl font-black tabular-nums tracking-tighter">0%</span>
+            </div>
+        </div>
+        <div class="w-64 h-[1px] bg-black/10 relative overflow-hidden">
+            <div id="loader-progress" class="absolute inset-0 bg-black loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 p-8 md:p-12 flex justify-between items-center mix-blend-difference">
+        <div class="magnetic-target" data-dist="0.2">
+            <div class="flex flex-col">
+                <span class="font-black text-3xl tracking-tighter leading-none">AC.</span>
+                <span class="text-[8px] tracking-[0.4em] uppercase opacity-50">Studio</span>
+            </div>
+        </div>
+        <div class="flex gap-12 items-center">
+            <div class="hidden lg:flex gap-12 text-[10px] uppercase tracking-[0.3em] font-bold">
+                <a href="#about" class="hover:opacity-40 transition-opacity">Poveste</a>
+                <a href="#runway" class="hover:opacity-40 transition-opacity">Runway</a>
+                <a href="#atelier" class="hover:opacity-40 transition-opacity">Atelier</a>
+            </div>
+            <button class="magnetic-target w-12 h-12 flex flex-col items-center justify-center gap-1.5 border border-white/20 rounded-full group hover:bg-white transition-all">
+                <div class="w-6 h-[1px] bg-white group-hover:bg-black transition-colors"></div>
+                <div class="w-4 h-[1px] bg-white group-hover:bg-black transition-colors"></div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative h-[120vh] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0 bg-[radial-gradient(circle, #222 1px, transparent 1px)] [background-size:40px_40px] opacity-20"></div>
+        
+        <div id="hero-img" class="absolute w-[35vw] aspect-[3/4] z-0 opacity-40 grayscale blur-[1px]">
+            <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=1200" alt="Concept Alexandra Crîsta" class="w-full h-full object-cover">
+        </div>
+
+        <div class="z-10 text-center select-none mix-blend-difference">
+            <h1 class="flex flex-col items-center leading-none">
+                <span class="hero-text-1 text-[16vw] font-black tracking-tighter uppercase italic">ALEXANDRA</span>
+                <span class="hero-text-2 text-[16vw] font-black tracking-tighter uppercase text-outline">CRÎSTA</span>
+            </h1>
+            <div class="mt-12 flex items-center justify-center gap-8 opacity-0" id="hero-tag">
+                <div class="h-[1px] w-16 bg-white/40"></div>
+                <p class="text-[10px] tracking-[0.8em] uppercase font-light">Sfidând Normele Prin Structură</p>
+                <div class="h-[1px] w-16 bg-white/40"></div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-12 left-12 md:left-24 text-[9px] font-mono text-neutral-500 tracking-widest uppercase flex gap-20">
+            <div><span class="text-white block mb-1">RUNWAY READY</span>MILANO / PARIS</div>
+            <div><span class="text-white block mb-1">CRAFTSMANSHIP</span>100% HANDMADE</div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-60 bg-white text-black px-6 md:px-24 relative overflow-hidden">
+        <div class="absolute top-1/2 -translate-y-1/2 left-0 pointer-events-none opacity-[0.03] text-[20vw] font-black uppercase whitespace-nowrap rotate-[-90deg] origin-left">
+            MANIFEST
+        </div>
+        <div class="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-24 items-center">
+            <div class="lg:col-span-7 space-y-12">
+                <h2 class="text-5xl md:text-8xl font-bold leading-[0.9] tracking-tighter uppercase reveal-text">
+                    Fiecare cusătură este o decizie arhitecturală.
+                </h2>
+                <p class="text-xl md:text-2xl text-neutral-500 leading-relaxed font-light italic max-w-xl">
+                    Creațiile Alexandrei Crîsta nu sunt simple haine, ci extensii ale identității, menite să provoace simetria cotidiană prin brutalism estetic.
+                </p>
+                <div class="magnetic-target inline-block mt-8">
+                    <button class="group relative px-12 py-6 border border-black overflow-hidden flex items-center gap-4 rounded-full hover:text-white transition-colors duration-500">
+                        <div class="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                        <span class="relative z-10 text-xs font-bold uppercase tracking-widest">Descoperă Povestea</span>
+                        <i data-lucide="arrow-up-right" class="relative z-10 w-5 h-5 group-hover:rotate-45 transition-transform duration-500"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="lg:col-span-5 relative">
+                <div class="aspect-[3/4] bg-neutral-100 relative overflow-hidden shadow-2xl skew-elem">
+                    <img src="https://images.unsplash.com/photo-1537832816519-689ad163238b?auto=format&fit=crop&q=80&w=1200" alt="Atelier" class="w-full h-full object-cover grayscale transition-transform duration-[3s] hover:scale-110">
+                </div>
+                <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-black text-white rounded-full flex items-center justify-center p-6 text-[9px] text-center uppercase tracking-widest leading-tight font-bold border-8 border-white animate-spin-slow">
+                    Design • Inovație • Curaj • Măiestrie • 
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fashion Week Horizontal Scroll -->
+    <section id="runway" class="relative bg-black py-20 overflow-hidden">
+        <div class="px-24 mb-20">
+            <h2 class="text-white/20 text-xs font-mono uppercase tracking-[1em] mb-4">RUNWAY ARCHIVE</h2>
+            <div class="h-[1px] w-40 bg-white/20"></div>
+        </div>
+        
+        <div class="horizontal-scroll-section h-[100vh]">
+            <div class="horizontal-container">
+                <div class="w-screen h-full flex items-center px-[10vw]">
+                    <div class="w-[60vw] md:w-[40vw] group">
+                        <div class="aspect-[16/10] overflow-hidden bg-neutral-900 border border-white/5">
+                            <img src="https://images.unsplash.com/photo-1445205170230-053b830c6050?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-60 group-hover:opacity-100" alt="Milan">
+                        </div>
+                        <div class="mt-8">
+                            <p class="text-white/40 font-mono text-[10px] uppercase mb-2">Milano / 2024</p>
+                            <h3 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter">Maison de Mode</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-screen h-full flex items-center px-[10vw]">
+                    <div class="w-[60vw] md:w-[40vw] group">
+                        <div class="aspect-[16/10] overflow-hidden bg-neutral-900 border border-white/5">
+                            <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-60 group-hover:opacity-100" alt="Paris">
+                        </div>
+                        <div class="mt-8">
+                            <p class="text-white/40 font-mono text-[10px] uppercase mb-2">Paris / 2023</p>
+                            <h3 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter">Avant-Garde Gala</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-screen h-full flex items-center px-[10vw]">
+                    <div class="w-[60vw] md:w-[40vw] group">
+                        <div class="aspect-[16/10] overflow-hidden bg-neutral-900 border border-white/5">
+                            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-60 group-hover:opacity-100" alt="London">
+                        </div>
+                        <div class="mt-8">
+                            <p class="text-white/40 font-mono text-[10px] uppercase mb-2">London / 2023</p>
+                            <h3 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter">The Void Show</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Atelier / Products -->
+    <section id="atelier" class="py-60 bg-[#fafafa] text-black px-6 md:px-24">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-40 border-b border-black/10 pb-16 gap-10">
+                <div class="max-w-2xl">
+                    <h2 class="text-9xl md:text-[12vw] font-black uppercase tracking-tighter leading-[0.8] mb-8">ATELIER</h2>
+                    <p class="text-neutral-500 font-mono text-xs uppercase tracking-[0.5em] italic">Colecție Unicat / Handmade</p>
+                </div>
+                <div class="magnetic-target w-20 h-20 flex items-center justify-center border border-black rounded-full hover:bg-black hover:text-white transition-all cursor-pointer">
+                    <i data-lucide="plus"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-60">
+                <!-- Produs 1 -->
+                <div class="product-card group" data-tilt>
+                    <div class="relative overflow-hidden aspect-[4/5] bg-neutral-200 shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=800" alt="The Alchemist Clutch" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-transform duration-[2s] group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                            <div class="w-24 h-24 bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 transition-all">
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Detalii</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-12 flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">S/N: 01-24-CRISTA</span>
+                            <h3 class="text-4xl font-bold uppercase tracking-tighter">The Alchemist Clutch</h3>
+                        </div>
+                        <p class="text-3xl font-black italic">580€</p>
+                    </div>
+                </div>
+                <!-- Produs 2 -->
+                <div class="product-card group md:mt-60" data-tilt>
+                    <div class="relative overflow-hidden aspect-[4/5] bg-neutral-200 shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=800" alt="Shell Sculpt Corset" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-transform duration-[2s] group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                            <div class="w-24 h-24 bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 transition-all">
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Detalii</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-12 flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">S/N: 03-24-CRISTA</span>
+                            <h3 class="text-4xl font-bold uppercase tracking-tighter">Shell Sculpt Corset</h3>
+                        </div>
+                        <p class="text-3xl font-black italic">1400€</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#050505] text-white pt-60 pb-16 px-6 md:px-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-40 mb-40">
+            <div class="space-y-16">
+                <h2 class="text-[10vw] font-black leading-none uppercase tracking-tighter italic opacity-20">DIALOG</h2>
+                <div class="magnetic-target inline-block">
+                    <a href="mailto:studio@alexandracrista.ro" class="text-3xl md:text-6xl font-light hover:text-neutral-400 transition-colors flex items-center gap-8 group">
+                        STUDIO@CRISTA.RO
+                        <div class="w-16 h-16 border border-white/20 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                            <i data-lucide="arrow-up-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="flex flex-col justify-end lg:items-end gap-12">
+                <div class="space-y-4 uppercase tracking-[0.4em] text-[10px] font-medium lg:text-right text-neutral-500">
+                    <p class="text-white mb-6">Urmează Universul</p>
+                    <a href="#" class="block hover:text-white transition-colors underline decoration-white/10 underline-offset-8">Instagram</a>
+                    <a href="#" class="block hover:text-white transition-colors underline decoration-white/10 underline-offset-8">Vogue Runway</a>
+                    <a href="#" class="block hover:text-white transition-colors underline decoration-white/10 underline-offset-8">Atelier Privé</a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-white/5 pt-16 flex flex-col md:flex-row justify-between items-center text-[8px] uppercase tracking-[0.6em] text-neutral-700 font-mono">
+            <p>© 2024 Alexandra Crîsta Studio — Artefacte Vestimentare</p>
+            <div class="flex gap-12">
+                <span>Privacy</span>
+                <span>Terms</span>
+            </div>
+        </div>
+        <!-- Decorative Text -->
+        <div class="absolute -bottom-24 -left-12 select-none pointer-events-none opacity-[0.02] text-[40vw] font-black leading-none">CRISTA</div>
+    </footer>
+
+    <!-- Grain Overlay -->
+    <div class="noise-overlay"></div>
+
+    <script>
+        // Inițializare Lucide Icons
+        lucide.createIcons();
+
+        // --- Loader Logic ---
+        window.addEventListener('load', () => {
+            let percent = 0;
+            const loaderPercent = document.getElementById('loader-percent');
+            const loaderProgress = document.getElementById('loader-progress');
+            const loader = document.getElementById('loader');
+
+            const interval = setInterval(() => {
+                percent++;
+                loaderPercent.innerText = `${percent}%`;
+                loaderProgress.style.transform = `scaleX(${percent / 100})`;
+
+                if (percent >= 100) {
+                    clearInterval(interval);
+                    gsap.to(loader, {
+                        y: '-100%',
+                        duration: 1.2,
+                        ease: 'expo.inOut',
+                        onComplete: () => {
+                            loader.style.display = 'none';
+                            initAnimations();
+                        }
+                    });
+                }
+            }, 15);
+        });
+
+        // --- GSAP Animations ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        function initAnimations() {
+            // Hero Reveal
+            gsap.from('.hero-text-1', { x: -100, opacity: 0, duration: 1.5, ease: 'expo.out' });
+            gsap.from('.hero-text-2', { x: 100, opacity: 0, duration: 1.5, delay: 0.2, ease: 'expo.out' });
+            gsap.to('#hero-tag', { opacity: 1, duration: 1, delay: 1 });
+            
+            // Parallax Hero Img
+            gsap.to('#hero-img', {
+                y: 150,
+                scrollTrigger: {
+                    trigger: 'body',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+
+            // Reveal Text Animation
+            gsap.utils.toArray('.reveal-text').forEach(text => {
+                gsap.from(text, {
+                    y: 100,
+                    opacity: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: text,
+                        start: 'top 85%'
+                    }
+                });
+            });
+
+            // Horizontal Scroll
+            const container = document.querySelector('.horizontal-container');
+            gsap.to(container, {
+                x: () => -(container.scrollWidth - window.innerWidth),
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".horizontal-scroll-section",
+                    start: "top top",
+                    end: () => "+=" + container.scrollWidth,
+                    scrub: 1,
+                    pin: true,
+                    anticipatePin: 1
+                }
+            });
+        }
+
+        // --- Custom Cursor & Spotlight ---
+        const cursorDot = document.getElementById('cursor-dot');
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursorDot, {
+                x: e.clientX - 16,
+                y: e.clientY - 16,
+                duration: 0.5,
+                ease: 'power3.out'
+            });
+        });
+
+        // Hover Effect on Cursor
+        document.querySelectorAll('button, a, .group').forEach(elem => {
+            elem.addEventListener('mouseenter', () => {
+                gsap.to(cursorDot, { scale: 3, opacity: 0.1 });
+            });
+            elem.addEventListener('mouseleave', () => {
+                gsap.to(cursorDot, { scale: 1, opacity: 1 });
+            });
+        });
+
+        // --- Magnetic Elements ---
+        const magneticTargets = document.querySelectorAll('.magnetic-target');
+        magneticTargets.forEach(target => {
+            target.addEventListener('mousemove', (e) => {
+                const rect = target.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const strength = target.dataset.dist || 0.4;
+                
+                gsap.to(target, {
+                    x: x * strength,
+                    y: y * strength,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+
+            target.addEventListener('mouseleave', () => {
+                gsap.to(target, { x: 0, y: 0, duration: 1, ease: 'elastic.out(1, 0.3)' });
+            });
+        });
+
+        // --- Tilt Effect (Product Cards) ---
+        document.querySelectorAll('[data-tilt]').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                
+                gsap.to(card, {
+                    rotateY: x * 20,
+                    rotateX: y * -20,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                    transformPerspective: 1000
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX: 0, rotateY: 0, duration: 1 });
+            });
+        });
+    </script>
+
+    <style>
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 15s linear infinite;
+        }
+    </style>
+</body>
+</html>
