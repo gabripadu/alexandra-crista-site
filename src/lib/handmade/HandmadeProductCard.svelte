@@ -42,7 +42,7 @@
 			: 'cursor-default'}"
 		role="button"
 		tabindex="0"
-		aria-label="Galerie {title}: apasă în centrul imaginii pentru fotografia următoare ({slides.length} imagini)"
+		aria-label={`Galerie ${current.title ?? title}: apasă în centrul imaginii pentru fotografia următoare (${slides.length} imagini)`}
 		onclick={onFrameClick}
 		onkeydown={onFrameKeydown}
 	>
@@ -62,16 +62,25 @@
 			</div>
 		</div>
 	</div>
-	<div class="mt-6 flex items-start justify-between gap-4 md:mt-8 md:gap-5">
-		<div class="min-w-0">
-			<span class="font-mono text-[10px] tracking-widest text-neutral-400 uppercase">{serial}</span>
-			<h3 class="text-3xl font-bold tracking-tighter uppercase md:text-4xl">{title}</h3>
-			{#if slides.length > 1}
-				<p class="mt-2 font-mono text-[9px] tracking-wider text-neutral-400 uppercase">
-					Centru imagine · {index + 1}/{slides.length}
-				</p>
-			{/if}
+	<div class="mt-6 flex flex-col gap-3 md:mt-8 md:gap-4">
+		<div class="flex items-start justify-between gap-4 md:gap-5">
+			<div class="min-w-0">
+				<span class="font-mono text-[10px] tracking-widest text-neutral-400 uppercase">{serial}</span>
+				<h3 class="text-3xl font-bold tracking-tighter uppercase md:text-4xl">
+					{current.title ?? title}
+				</h3>
+				{#if slides.length > 1}
+					<p class="mt-2 font-mono text-[9px] tracking-wider text-neutral-400 uppercase">
+						Centru imagine · {index + 1}/{slides.length}
+					</p>
+				{/if}
+			</div>
+			<p class="shrink-0 text-3xl font-black italic">{priceLabel}</p>
 		</div>
-		<p class="shrink-0 text-3xl font-black italic">{priceLabel}</p>
+		{#if current.description}
+			<p class="max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
+				{current.description}
+			</p>
+		{/if}
 	</div>
 </div>
