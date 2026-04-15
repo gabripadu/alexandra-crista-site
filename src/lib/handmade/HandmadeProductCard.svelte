@@ -35,7 +35,7 @@
 	}
 </script>
 
-<div class="product-card group w-full min-w-0" data-tilt>
+<div class="product-card group w-full min-w-0 overflow-x-hidden" data-tilt>
 	<div
 		class="relative aspect-[4/5] overflow-hidden bg-neutral-200 shadow-2xl select-none outline-none focus-visible:ring-2 focus-visible:ring-black/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fafafa] {slides.length > 1
 			? 'cursor-pointer'
@@ -62,11 +62,15 @@
 			</div>
 		</div>
 	</div>
-	<div class="mt-6 flex flex-col gap-3 md:mt-8 md:gap-4">
-		<div class="flex items-start justify-between gap-4 md:gap-5">
-			<div class="min-w-0">
-				<span class="font-mono text-[10px] tracking-widest text-neutral-400 uppercase">{serial}</span>
-				<h3 class="text-3xl font-bold tracking-tighter uppercase md:text-4xl">
+	<div class="mt-5 flex flex-col gap-2 sm:mt-6 sm:gap-3 md:mt-8 md:gap-4">
+		<div class="flex min-w-0 items-start justify-between gap-3 md:gap-5">
+			<div class="min-w-0 flex-1">
+				<span class="font-mono text-[9px] tracking-widest text-neutral-400 uppercase sm:text-[10px]"
+					>{serial}</span
+				>
+				<h3
+					class="text-balance break-words text-2xl font-bold tracking-tighter uppercase sm:text-3xl md:text-4xl"
+				>
 					{current.title ?? title}
 				</h3>
 				{#if slides.length > 1}
@@ -75,10 +79,10 @@
 					</p>
 				{/if}
 			</div>
-			<p class="shrink-0 text-3xl font-black italic">{priceLabel}</p>
+			<p class="shrink-0 text-right text-2xl font-black italic sm:text-3xl">{priceLabel}</p>
 		</div>
 		{#if current.description}
-			<p class="max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
+			<p class="max-w-2xl text-pretty text-sm leading-relaxed text-neutral-600 md:text-base">
 				{current.description}
 			</p>
 		{/if}

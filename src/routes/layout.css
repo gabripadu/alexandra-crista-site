@@ -1,7 +1,25 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+@theme {
+	--font-syne: 'Syne', system-ui, sans-serif;
+	--font-playfair: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+
+.font-syne {
+	font-family: var(--font-syne);
+}
+
+.font-playfair {
+	font-family: var(--font-playfair);
+}
+
 /* Alexandra Crîsta landing — activat doar când există clasa pe <html> */
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
 html.ac-landing {
 	@apply bg-[#030303];
 }
@@ -9,7 +27,17 @@ html.ac-landing {
 html.ac-landing body {
 	font-family: Inter, system-ui, sans-serif;
 	cursor: none;
-	overflow-x: hidden;
+	overflow-x: clip;
+}
+
+/* Mobil: fără cursor invizibil, fără derapaj orizontal, zone sigure */
+@media (max-width: 767.98px) {
+	html.ac-landing body {
+		cursor: auto;
+		overflow-x: clip;
+		padding-left: max(0px, env(safe-area-inset-left));
+		padding-right: max(0px, env(safe-area-inset-right));
+	}
 }
 
 html.ac-landing h1,
@@ -17,19 +45,6 @@ html.ac-landing h2,
 html.ac-landing h3,
 html.ac-landing .font-syne {
 	font-family: Syne, system-ui, sans-serif;
-}
-
-@keyframes ac-spin-slow {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-html.ac-landing .ac-animate-spin-slow {
-	animation: ac-spin-slow 15s linear infinite;
 }
 
 html.ac-landing ::-webkit-scrollbar {

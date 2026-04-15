@@ -33,6 +33,13 @@ export function getHandmadeCategoryBySlug(slug: string): HandmadeCategory | unde
 	return handmadeCategories.find((c) => c.id === slug);
 }
 
+/** Linkuri nav / FAB atelier — aceleași rute ca `/handmade/[categorie]` */
+export const handmadeCategoryNavLinks = [
+	{ id: 'haine', path: '/handmade/haine', label: 'Haine' },
+	{ id: 'inele', path: '/handmade/inele', label: 'Inele' },
+	{ id: 'brose', path: '/handmade/brose', label: 'Broșe' }
+] as const;
+
 export const handmadeCategories: HandmadeCategory[] = [
 	{
 		id: 'haine',
@@ -45,63 +52,63 @@ export const handmadeCategories: HandmadeCategory[] = [
 				alt: 'Bluză albă handmade cu fundă din organza și perle, pe manechin',
 				title: 'Bluză «Organza & perle»',
 				description:
-					'Bluză albă lucrată manual, cu fundă din organza fină și accente de perle. Siluetă lejeră, finisaje atente; piesă din atelier, disponibilă la comandă.'
+					'Bluză albă din bumbac cu croi lejer. Fundă amplă din organza transparentă, strânsă în mijloc, cu perle cusute de-a lungul marginilor și la baza gulerului.'
 			},
 			{
 				src: `${b}/haine-02.png`,
 				alt: 'Cămașă albă cu mâneci din voal și fundițe catifea vișinie — peisaj de iarnă',
 				title: 'Cămașă «Voal & catifea»',
 				description:
-					'Cămașă albă cu mâneci din voal fin și fundițe din catifea vișinie — contrast între transparență și materiale opace. Croi curat, detalii lucrate în atelier. La comandă.'
+					'Cămașă albă cu corp simplu și mâneci lungi din voal ușor. La încheieturi, fundițe strânse din catifea vișinie care taie transparența mânecilor.'
 			},
 			{
 				src: `${b}/haine-03.png`,
 				alt: 'Cămașă albă detaliu mâneci și fundă catifea, zăpadă',
 				title: 'Cămașă «Detaliu iarnă»',
 				description:
-					'Focus pe mâneci și fundă din catifea, în combinație cu bumbacul alb al piesei. O linie atemporală, gândită pentru ținute de sezon rece. Realizată manual — la comandă.'
+					'Detaliu pe mânecă: mansetă și bandă verticală din catifea închisă pe fond de bumbac alb. Fundă din aceeași catifea, proporționată, cu nod clar definit.'
 			},
 			{
 				src: `${b}/haine-04.png`,
 				alt: 'Cămașă albă volane și tulle, poză în zăpadă',
 				title: 'Cămașă «Volane & tulle»',
 				description:
-					'Straturi de volane și tulle pentru volum controlat și mișcare în imagine. Alb pur pe fundal de zăpadă, aer editorial. Lucrată în atelier, la comandă.'
+					'Cămașă cu umeri și piept acoperite de volane suprapuse din tulle alb. Volumul crește spre linia umerilor; bază simplă pentru echilibru.'
 			},
 			{
 				src: `${b}/haine-05.png`,
 				alt: 'Cămașă albă cu guler punctat cu perle',
 				title: 'Cămașă «Guler perlat»',
 				description:
-					'Guler evidențiat prin perle cusute punctual, lumină discretă pe alb. Piesă rafinată pentru garderoba de zi sau seară. La comandă, în atelier.'
+					'Cămașă albă cu guler clasic; marginea gulerului e marcată de perle mici cusute la distanțe regulate, ca o linie punctată pe alb.'
 			},
 			{
 				src: `${b}/haine-06.png`,
 				alt: 'Cămașă albă cu dantelă la guler, fundal roz',
 				title: 'Cămașă «Dantelă & roz»',
 				description:
-					'Dantelă fină la guler, contrast soft pe fundal roz. Croială clasică cu accent romantic, executată și finisată manual. Disponibilă la comandă.'
+					'Cămașă albă cu guler înalt conturat de o bandă îngustă de dantelă. Închidere ascunsă; croi drept pe bust.'
 			},
 			{
 				src: `${b}/haine-07.png`,
 				alt: 'Bluză bleu cu mânecă evazată spre bază și fundă la cot, peisaj zăpadă',
 				title: 'Bluză «Bleu evazat» — fundă la cot',
 				description:
-					'Mânecă cu evazare spre bază și fundă proporționată la cot, echilibru între volum și siluetă. Nuanță bleu, detalii finisate în atelier. La comandă.'
+					'Bluză într-o nuanță bleu-pudră. Mânecă trei sferturi, evazată spre bază; fundă legată la cot, din același material, fără contrast de culoare.'
 			},
 			{
 				src: `${b}/haine-08.png`,
 				alt: 'Cămașă albă cu inimioare roșii, pe umeraș',
 				title: 'Cămașă «Inimi roșii»',
 				description:
-					'Motiv de inimi roșii pe alb, piesă jucăușă și purtabilă. Potrivită cadourilor sau ținutelor cu accente romantice. Lucrată manual — la comandă.'
+					'Cămașă albă cu motiv repetat de inimioare roșii, așezate pe piept și umeri. Guler simplu, croi familiar de cămașă.'
 			},
 			{
 				src: `${b}/haine-09.png`,
 				alt: 'Ținută off-shoulder bleumarin cu fundă metalică aurie și pantaloni gri',
 				title: 'Ținută «Bleumarin & fundă metal»',
 				description:
-					'Bluză off-shoulder bleumarin cu fundă metalică aurie, asortată cu pantaloni gri — siluetă contemporană, prezență clară. Concept la comandă în atelier.'
+					'Bluză off-shoulder bleumarin, decolteu drept pe umeri. Fundă metalică aurie, rigidă, centrată pe piept. Pantaloni gri, talie înaltă, linie dreaptă.'
 			}
 		]
 	},
@@ -112,81 +119,60 @@ export const handmadeCategories: HandmadeCategory[] = [
 		priceLabel: 'La comandă',
 		slides: [
 			{
-				src: '/images/handmade-atelier-1.png',
-				alt: 'Flori textile handmade pe mână manechin din lemn — inele și broșe',
-				title: 'Atelier «Flori pe mână»',
-				description:
-					'Prezentare flori textile handmade pe mână de manechin — inele și broșe coordonate, culoare și volum lucrate manual. Piese unicat sau în serie mică; la comandă.'
-			},
-			{
 				src: '/images/handmade-atelier-2.png',
-				alt: 'Broșe mini tricotate pe cartonașe Martie — preț atelier',
-				title: 'Broșe mini «Martie»',
+				alt: 'Broșe mini croșetate pe cartonașe, flori în culori contrastante',
+				title: 'Broșe croșetate mini',
 				description:
-					'Broșe mini tricotate, expuse pe cartonașe dedicate sezonului. Ușoare, expresive, ideale ca accente pe palton sau sacou. Disponibile la atelier.'
+					'Flori croșetate mici, în stil mandala sau floarea-soarelui, cu combinații contrastante (violet și galben, roșu și galben, accente aurii). Fiecare e montată pe cartonaș cu etichetă vizibilă — format vesel, ușor de purtat zilnic sau de oferit ca mică atenție.'
 			},
 			{
 				src: '/images/handmade-atelier-3.png',
-				alt: 'Triadă broșe organza — galben, roșu și bronz pe cartonașe ilustrate',
-				title: 'Triadă «Organza chromatică»',
+				alt: 'Trei broșe din organză pe cartonașe ilustrate — mod de prezentare atelier',
+				title: 'Broșe organza — triadă cromatică',
 				description:
-					'Set de trei broșe din organza în galben, roșu și bronz, pe cartonașe ilustrate. Contrast de transparență și culoare; lucrate manual. La comandă.'
+					'Set de trei broșe din organză în galben, roșu și bronz, fiecare cu petale suprapuse și volum ușor la margini. Sunt expuse pe cartonașe ilustrate doar ca suport de prezentare pentru atelier — produsul este broșa; cartonașul face parte din modul de aranjare, nu este felicitare.'
 			},
 			{
 				src: `${b}/brose-01.png`,
-				alt: 'Trandafiri croșetați în cutie cadou cu fundă',
-				title: 'Cutie «Trandafiri croșetați»',
+				alt: 'Cutie cadou cu trandafiri croșetați grena',
+				title: 'Set trandafiri grena croșetați',
 				description:
-					'Trandafiri croșetați, prezentați în cutie cadou cu fundă — gata de oferit sau de purtat ca broșă. Finisaje atente, lucrate în atelier.'
+					'Cutie plină cu trandafiri croșetați manual din fir grena (lână sau bumbac), culoare bogată și volum rotunjit. Pot fi purtați ca broșe, folosiți ca aplicații pe textile sau păstrați ca piese mici decorative.'
 			},
 			{
 				src: `${b}/brose-02.png`,
-				alt: 'Broșe tricotate roșii pe cartonașe, mini șevalet',
-				title: 'Serie «Roșu tricotat»',
+				alt: 'Trandafir croșetat pe cartonaș, mini șevalet de lemn',
+				title: 'Tablou miniatură — trandafir croșetat',
 				description:
-					'Broșe tricotate în roșu intens, aranjate pe cartonașe cu mini șevalet. Textură caldă, prezență grafică pe țesături neutre. La comandă.'
+					'Trandafir roșu croșetat aplicat pe cartonaș cu design minimalist, așezat pe șevalet de lemn. Depășește simplul accesoriu: poate fi obiect de decor sau felicitare de colecție; mesajul scris de mână întregește piesa.'
 			},
 			{
 				src: `${b}/brose-03.png`,
-				alt: 'Broșă tricotată aurie cu fir mărțișor, cutie cu mușchi',
-				title: '«Aur de mărțișor»',
+				alt: 'Broșă aurie croșetată în cutie cadou pe pat de mușchi',
+				title: 'Broșă aurie croșetată — cutie cadou',
 				description:
-					'Broșă tricotată aurie cu fir de mărțișor, în cutie cu mușchi — piesă de sezon cu aer festiv. Realizată manual; serie limitată sau la comandă.'
-			},
-			{
-				src: `${b}/brose-04.png`,
-				alt: 'Colectie broșe mini tricotate pe suport lemn',
-				title: 'Colecție «Mini pe lemn»',
-				description:
-					'Colecție de broșe mini tricotate, expuse pe suport din lemn — ușor de privit și ales. Fiecare piesă e lucrată individual în atelier.'
-			},
-			{
-				src: `${b}/brose-05.png`,
-				alt: 'Broșe flori din organza pe cartonașe, tonuri galben, roșu, maro',
-				title: 'Flori organza «Tonuri calde»',
-				description:
-					'Broșe în formă de floare din organza, pe cartonașe — paletă galben, roșu, maro. Volum aerat, fixare sigură. La comandă în atelier.'
+					'Piesă festivă din fir metalic auriu, croșetată dens, suprafață strălucitoare. Prezentată pe pat de mușchi natural în cutie, cu șnur tradițional alb-roșu — potrivită ca dar de sărbători sau purtată ca mărțișor.'
 			},
 			{
 				src: `${b}/brose-06.png`,
-				alt: 'Manechin cu guler alb și broșe florale colorate handmade',
-				title: 'Expoziție «Manechin & guler»',
+				alt: 'Guler pe manechin cu broșe florale multicolore',
+				title: 'Colecție broșe florale multicolore',
 				description:
-					'Manechin cu guler alb și broșe florale colorate handmade — vizual de vitrină sau expoziție. Combinații de culori la cerere; consultanță în atelier.'
+					'Ansamblu pe manechin cu guler alb: flori croșetate (galben muștar, albastru pastel) și flori din material textil cu buline, alb și grena. Arată cum mai multe broșe transformă un guler simplu într-un punct focal.'
 			},
 			{
 				src: `${b}/brose-07.png`,
-				alt: 'Broșă burgund din organza cu ace, pe pulover crem',
-				title: '«Burgund pe crem»',
+				alt: 'Broșă floare din organză vișinie pe pulover crem',
+				title: 'Floare din organză vișinie',
 				description:
-					'Broșă burgund din organza, cu sistem de prindere cu ace, purtată pe pulover crem — contrast bogat și purtabil zi de zi. Lucrată manual, la comandă.'
+					'Broșă care mizează pe transparență și delicatețe: straturi suprapuse de organză fină (sau mătase arsă pe margini pentru volum), aspect diafan. Centrul florii are un detaliu discret; linie sofisticată, potrivită pentru seară sau ținute speciale.'
 			},
 			{
 				src: `${b}/brose-08.png`,
-				alt: 'Trandafir roșu fabric, broșă pe pulover ribbed crem — fundal roz',
-				title: '«Trandafir statement»',
+				alt: 'Broșă trandafir roșu din catifea pe pulover crem',
+				title: 'Broșă trandafir din catifea roșie',
 				description:
-					'Trandafir roșu textil, broșă cu impact vizual pe tricot ribbed crem — fundal roz, atmosferă editorială. Piesă puternică, unică sau la comandă.'
+					'Formă de trandafir înflorit, din catifea roșie — textură bogată și culoare profundă. Prindere cu ac lung cu protecție; accent clar de eleganță pe fundal monocrom.'
 			}
 		]
 	},
@@ -201,14 +187,14 @@ export const handmadeCategories: HandmadeCategory[] = [
 				alt: 'Inel statement trandafir roșu din material textil, mână cu manichiură',
 				title: 'Inel «Trandafir roșu»',
 				description:
-					'Inel statement cu trandafir roșu din material textil, volum conturat și ușor la purtat. Finisaje la petale și bază; realizat în atelier — la comandă.'
+					'Inel cu floare mare din material textil roșu, petale tăiate și suprapuse spre centru. Banderolă ajustabilă sau inel deschis, ușor, cu baza ascunsă sub floare.'
 			},
 			{
 				src: `${b}/inele-02.png`,
 				alt: 'Inele floare textilă pe mână manechin expoziție',
 				title: 'Serie «Flori textil»',
 				description:
-					'Serie de inele cu flori textile, variate ca formă și culoare, prezentate pe mână de expunere. Potrivite ca set sau piesă unică; serie limitată sau la comandă.'
+					'Două inele distincte pe același suport: flori textile cu petale în roșu aprins și roz, centre galbene, montate pe inele subțiri metalice sau bandă textilă rigidă.'
 			}
 		]
 	}

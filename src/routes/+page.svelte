@@ -1,32 +1,30 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
+	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import ArrowUpRight from 'lucide-svelte/icons/arrow-up-right';
 	import Plus from 'lucide-svelte/icons/plus';
 	import HandmadeProductCard from '$lib/handmade/HandmadeProductCard.svelte';
-	import { handmadeCategories } from '$lib/handmade/gallery';
+	import { handmadeCategories, handmadeCategoryNavLinks } from '$lib/handmade/gallery';
 
 	let loaderPercentEl: HTMLSpanElement | undefined;
 	let loaderProgressEl: HTMLDivElement | undefined;
 	let loaderEl: HTMLDivElement | undefined;
 	let cursorDotEl: HTMLDivElement | undefined;
-	let navOnLightBg = $state(false);
 
-	function updateNavContrast() {
-		if (typeof document === 'undefined') return;
-		const nav = document.getElementById('site-nav');
-		const x = Math.min(window.innerWidth - 8, Math.max(8, window.innerWidth / 2));
-		const y = 30;
-		for (const el of document.elementsFromPoint(x, y)) {
-			if (nav && (el === nav || nav.contains(el))) continue;
-			const marker = el.closest('[data-nav-bg]');
-			if (marker) {
-				navOnLightBg = marker.getAttribute('data-nav-bg') === 'light';
-				return;
-			}
-		}
-		navOnLightBg = false;
+	let handmadeFabOpen = $state(false);
+
+	const handmadeFabLinks = [
+		{ id: 'haine', href: '/handmade/haine', label: 'Haine' },
+		{ id: 'inele', href: '/handmade/inele', label: 'Inele' },
+		{ id: 'brose', href: '/handmade/brose', label: 'Broșe' }
+	] as const;
+
+	function toggleHandmadeFab() {
+		handmadeFabOpen = !handmadeFabOpen;
 	}
 
 	function initAnimations() {
@@ -214,7 +212,7 @@
 						onComplete: () => {
 							loaderEl!.style.display = 'none';
 							initAnimations();
-							requestAnimationFrame(() => updateNavContrast());
+							window.dispatchEvent(new CustomEvent('ac-nav-refresh'));
 						}
 					});
 				}
@@ -223,14 +221,8 @@
 
 		interval = setInterval(tick, 15);
 
-		window.addEventListener('scroll', updateNavContrast, { passive: true });
-		window.addEventListener('resize', updateNavContrast);
-		requestAnimationFrame(() => updateNavContrast());
-
 		return () => {
 			clearInterval(interval);
-			window.removeEventListener('scroll', updateNavContrast);
-			window.removeEventListener('resize', updateNavContrast);
 		};
 	});
 
@@ -263,7 +255,7 @@
 <div
 	bind:this={loaderEl}
 	id="loader"
-	class="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-white text-black"
+	class="fixed inset-0 z-[10000] flex flex-col items-center justify-center overflow-x-hidden bg-white px-4 text-black"
 >
 	<div class="relative mb-8 overflow-hidden">
 		<span class="pointer-events-none select-none text-[20vw] leading-none font-black opacity-[0.03]"
@@ -273,7 +265,7 @@
 			<span
 				bind:this={loaderPercentEl}
 				id="loader-percent"
-				class="text-8xl font-black tracking-tighter tabular-nums">0%</span
+				class="text-5xl font-black tracking-tighter tabular-nums sm:text-7xl md:text-8xl">0%</span
 			>
 		</div>
 	</div>
@@ -286,62 +278,18 @@
 	</div>
 </div>
 
-<!-- Navigation -->
-<nav
-	id="site-nav"
-	class="fixed top-0 z-50 flex w-full items-center justify-between border-b px-5 py-2.5 backdrop-blur-xl backdrop-saturate-150 transition-colors duration-300 md:px-8 md:py-3 {navOnLightBg
-		? 'border-black/[0.08] bg-white/65'
-		: 'border-white/10 bg-black/40'}"
-	class:text-black={navOnLightBg}
-	class:text-white={!navOnLightBg}
-	class:drop-shadow-[0_1px_12px_rgba(0,0,0,0.55)]={!navOnLightBg}
->
-	<div class="magnetic-target -mt-px" data-dist="0.2">
-		<span
-			class="nav-logo max-w-[min(100vw-8rem,28rem)] text-left text-lg font-black tracking-tighter leading-none sm:text-xl md:max-w-none md:text-2xl"
-		>
-			Alexandra Crîsta
-		</span>
-	</div>
-	<div class="flex -translate-y-px items-center gap-8 md:gap-10">
-		<div
-			class="hidden flex-wrap items-center justify-end gap-x-8 gap-y-2 text-[9px] font-bold tracking-[0.28em] uppercase md:flex lg:gap-x-10 lg:text-[10px] lg:tracking-[0.3em]"
-		>
-			<a href="#about" class="transition-opacity hover:opacity-50">Poveste</a>
-			<a href="#design" class="transition-opacity hover:opacity-50">Design</a>
-			<a href="#handmade" class="transition-opacity hover:opacity-50">Handmade</a>
-			<a href="#colaborare" class="transition-opacity hover:opacity-50">Colaborare</a>
-		</div>
-		<button
-			type="button"
-			class="magnetic-target group flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-full border transition-all {navOnLightBg
-				? 'border-black/20 hover:bg-black'
-				: 'border-white/20 hover:bg-white'}"
-			aria-label="Deschide meniul"
-		>
-			<div
-				class="h-px w-5 transition-colors {navOnLightBg
-					? 'bg-black group-hover:bg-white'
-					: 'bg-white group-hover:bg-black'}"
-			></div>
-			<div
-				class="h-px w-3.5 transition-colors {navOnLightBg
-					? 'bg-black group-hover:bg-white'
-					: 'bg-white group-hover:bg-black'}"
-			></div>
-		</button>
-	</div>
-</nav>
-
 <!-- Hero Section -->
-<section class="relative z-10 flex h-[120vh] items-center justify-center overflow-hidden" data-nav-bg="dark">
+<section
+	class="relative z-10 flex min-h-[100svh] items-center justify-center overflow-x-hidden overflow-y-hidden pb-32 pt-14 md:h-[120vh] md:min-h-0 md:pb-0 md:pt-0"
+	data-nav-bg="dark"
+>
 	<div
 		class="absolute inset-0 z-0 opacity-20 [background-size:40px_40px] bg-[radial-gradient(circle,#222_1px,transparent_1px)]"
 	></div>
 
 	<div
 		id="hero-img"
-		class="absolute z-0 aspect-[3/4] h-[min(88vh,48rem)] w-auto opacity-[0.58] sm:opacity-[0.65]"
+		class="absolute z-0 aspect-[3/4] h-[min(58vh,28rem)] w-auto max-w-[96vw] opacity-[0.52] sm:h-[min(72vh,40rem)] sm:opacity-[0.6] md:h-[min(88vh,48rem)] md:max-w-none md:opacity-[0.65]"
 	>
 		<img
 			src="/images/hero-alexandra.png"
@@ -350,54 +298,63 @@
 		/>
 	</div>
 
-	<div class="z-10 select-none text-center text-white">
-		<h1 class="flex max-w-[min(100%,96vw)] flex-col items-center px-2 leading-none">
+	<div class="z-10 w-full min-w-0 select-none px-3 text-center text-white md:px-0">
+		<h1
+			class="flex w-full max-w-[min(100%,100vw-1.5rem)] flex-col items-center leading-none md:max-w-[min(100%,96vw)]"
+		>
 			<span
-				class="hero-text-1 text-[clamp(1.75rem,11.5vw,8.5rem)] font-black tracking-tighter uppercase italic text-white"
+				class="hero-text-1 text-[clamp(1.45rem,9.5vw,8.5rem)] font-black tracking-tighter text-balance uppercase italic text-white max-md:leading-[0.95]"
 				>ALEXANDRA</span
 			>
 			<span
-				class="hero-text-2 text-[clamp(1.75rem,11.5vw,8.5rem)] font-black tracking-tighter uppercase text-white"
+				class="hero-text-2 text-[clamp(1.45rem,9.5vw,8.5rem)] font-black tracking-tighter text-balance uppercase text-white max-md:leading-[0.95]"
 				>CRÎSTA</span
 			>
 		</h1>
-		<div class="mt-12 flex items-center justify-center gap-8 opacity-0" id="hero-tag">
-			<div class="h-px w-16 bg-white/55 sm:w-[4.5rem]"></div>
+		<div
+			class="mt-8 flex items-center justify-center gap-4 opacity-0 sm:mt-12 sm:gap-8 md:gap-8"
+			id="hero-tag"
+		>
+			<div class="hidden h-px w-10 bg-white/55 sm:block sm:w-16 md:w-[4.5rem]"></div>
 			<p
-				class="max-w-[90vw] px-1 text-[11px] leading-snug font-medium uppercase tracking-[0.65em] text-white sm:text-xs md:tracking-[0.72em]"
+				class="max-w-[min(100%,22rem)] px-0.5 text-[10px] leading-snug font-medium tracking-[0.38em] text-white uppercase sm:max-w-[90vw] sm:text-xs sm:tracking-[0.55em] md:tracking-[0.72em]"
 			>
 				Sfidând Normele Prin Structură
 			</p>
-			<div class="h-px w-16 bg-white/55 sm:w-[4.5rem]"></div>
+			<div class="hidden h-px w-10 bg-white/55 sm:block sm:w-16 md:w-[4.5rem]"></div>
 		</div>
 	</div>
 
 	<div
-		class="absolute bottom-12 left-12 flex gap-20 font-mono text-[9px] tracking-widest text-neutral-500 uppercase md:left-24"
+		class="absolute bottom-[max(1rem,env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto flex w-full max-w-[100vw] flex-col gap-8 px-4 font-mono text-[10px] font-bold leading-snug tracking-[0.14em] text-neutral-400 uppercase sm:bottom-12 sm:left-12 sm:right-auto sm:mx-0 sm:max-w-none sm:flex-row sm:gap-16 sm:px-0 sm:text-xs sm:tracking-[0.2em] md:left-24 md:gap-24 md:text-[0.8125rem] md:tracking-[0.22em] lg:gap-28 lg:text-sm"
 	>
 		<a
 			href="https://www.romaniandesignweek.ro/portofoliu/alternative-reality"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="max-w-[14rem] transition-opacity hover:opacity-75"
+			class="min-w-0 max-w-full transition-opacity hover:opacity-90 sm:max-w-[16rem] md:max-w-[18rem]"
 		>
-			<span class="mb-1 block text-white">RO DESIGN WEEK</span>
-			<span class="block">Alternative Reality</span>
+			<span class="mb-1.5 block text-white">RO DESIGN WEEK</span>
+			<span class="block font-extrabold text-white/90">Alternative Reality</span>
 		</a>
 		<a
 			href="https://www.instagram.com/p/DGaX8pTCYc3/"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="max-w-[14rem] transition-opacity hover:opacity-75"
+			class="max-w-[16rem] transition-opacity hover:opacity-90 md:max-w-[18rem]"
 		>
-			<span class="mb-1 block text-white">CRAFTSMANSHIP</span>
-			<span class="block">100% HANDMADE</span>
+			<span class="mb-1.5 block text-white">CRAFTSMANSHIP</span>
+			<span class="block font-extrabold text-white/90">100% HANDMADE</span>
 		</a>
 	</div>
 </section>
 
 <!-- About Section -->
-<section id="about" class="relative z-10 overflow-hidden bg-white px-6 py-60 text-black md:px-24" data-nav-bg="light">
+<section
+	id="about"
+	class="relative z-10 overflow-x-hidden bg-white px-4 py-16 text-black sm:px-6 sm:py-24 md:px-24 md:py-60"
+	data-nav-bg="light"
+>
 	<div
 		class="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 rotate-[-90deg] origin-left text-[20vw] font-black uppercase whitespace-nowrap opacity-[0.03]"
 	>
@@ -405,7 +362,7 @@
 	</div>
 	<div class="relative z-10 mx-auto max-w-7xl">
 		<h2
-			class="reveal-text mb-12 max-w-5xl text-5xl leading-[0.9] font-bold tracking-tighter uppercase md:mb-14 md:text-8xl"
+			class="reveal-text mb-8 max-w-full text-balance break-words text-3xl leading-[0.95] font-bold tracking-tighter uppercase sm:mb-10 sm:text-4xl md:mb-14 md:max-w-5xl md:text-6xl lg:text-8xl"
 		>
 			Fiecare cusătură este o decizie arhitecturală.
 		</h2>
@@ -414,9 +371,15 @@
 			class="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-x-10 xl:gap-x-14"
 		>
 			<div class="relative z-20 min-w-0 lg:col-span-6 xl:col-span-5">
-				<div class="max-w-xl space-y-5 lg:max-w-none xl:max-w-xl">
+				<div class="max-w-xl space-y-4 sm:space-y-5 lg:max-w-none xl:max-w-xl">
 					<p
-						class="reveal-text text-xl leading-relaxed font-light text-neutral-600 italic md:text-2xl"
+						class="reveal-text border-l-[3px] border-black/35 pl-4 text-lg font-light leading-snug text-neutral-800 italic sm:pl-5 sm:text-xl md:border-l-4 md:pl-7 md:text-2xl md:leading-snug lg:text-[1.85rem] lg:leading-[1.35]"
+					>
+						„Nu sunt aici doar ca să bifez sarcini, ci ca să creez un context în care oamenii și ideile
+						lor să poată străluci fără măști și fără scurtături.”
+					</p>
+					<p
+						class="reveal-text text-base leading-relaxed font-light text-neutral-600 italic sm:text-lg md:text-xl lg:text-2xl"
 					>
 						Sunt Alexandra Crîsta —
 						<strong class="font-medium text-neutral-800">arhitect de experiențe</strong> care pune
@@ -424,29 +387,25 @@
 						imaginii digitale. În atelier, trec de la idee statică la ceva viu: mesaj, material și trup în
 						același ritm.
 					</p>
-					<p class="reveal-text text-lg leading-relaxed font-light text-neutral-600 md:text-xl">
+					<p class="reveal-text text-base leading-relaxed font-light text-neutral-600 sm:text-lg md:text-xl">
 						„Vizibilitatea” nu îmi ajunge — caut
 						<strong class="font-normal text-neutral-800">relevanță</strong>. Îmbin claritatea analizei cu
 						intuiția care îndrăznește să rupă tiparul când simt că e nevoie de ceva mai cald. Meșteșugul
 						mereu în dialog cu felul în care percepem o piesă, nu cu un mesaj forțat. Când se poate,
 						îndrum și alți creativi spre o voce lucidă.
 					</p>
-					<p class="reveal-text text-lg leading-relaxed font-light text-neutral-600 md:text-xl">
+					<p class="reveal-text text-base leading-relaxed font-light text-neutral-600 sm:text-lg md:text-xl">
 						Mă ghidez după trei linii: conexiune umană autentică,
 						<strong class="font-normal text-neutral-800">simplitate strategică</strong> în idei și curajul
 						de a învăța din fiecare colecție ca dintr-un laborator.
-						<span class="mt-4 block border-l-2 border-black/15 pl-5 text-base text-neutral-700 italic md:text-lg">
-							„Nu sunt aici doar ca să bifez sarcini, ci ca să creez un context în care oamenii și ideile
-							lor să poată străluci fără măști și fără scurtături.”
-						</span>
 					</p>
 				</div>
-				<div class="magnetic-target mt-10 inline-block">
+				<div class="magnetic-target mt-8 inline-block max-w-full sm:mt-10">
 					<a
 						href="https://www.instagram.com/alexandracrista_designs/"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="group relative inline-flex items-center gap-4 overflow-hidden rounded-full border border-black px-12 py-6 transition-colors duration-500 hover:text-white"
+						class="group relative inline-flex max-w-full items-center gap-3 overflow-hidden rounded-full border border-black px-8 py-4 transition-colors duration-500 hover:text-white sm:gap-4 sm:px-12 sm:py-6"
 					>
 						<div
 							class="absolute inset-0 translate-y-full bg-black transition-transform duration-500 group-hover:translate-y-0"
@@ -475,11 +434,6 @@
 							class="visual-frame__media h-full w-full object-cover object-[center_22%]"
 						/>
 					</div>
-					<div
-						class="ac-animate-spin-slow pointer-events-none absolute -bottom-6 -right-5 z-10 flex h-32 w-32 items-center justify-center rounded-full border-[6px] border-white bg-black p-4 text-center text-[7px] leading-tight font-bold tracking-widest text-white uppercase shadow-lg sm:-bottom-8 sm:-right-7 sm:h-36 sm:w-36 sm:border-8 sm:text-[9px]"
-					>
-						Design • Inovație • Curaj • Măiestrie •
-					</div>
 				</figure>
 			</div>
 		</div>
@@ -489,7 +443,7 @@
 <!-- Fashion Week Horizontal Scroll -->
 <section
 	id="design"
-	class="relative z-10 overflow-hidden bg-black pt-20 pb-28 md:pb-36 lg:pb-44"
+	class="relative z-10 overflow-x-hidden bg-black pt-12 pb-16 md:pt-20 md:pb-28 lg:pb-36 xl:pb-44"
 	data-nav-bg="dark"
 >
 	<div
@@ -624,57 +578,138 @@
 		</p>
 		</div>
 	</div>
-	<div class="relative z-10 mx-auto mb-12 max-w-7xl px-6 md:px-12 lg:mb-20 lg:px-24">
-		<div class="max-w-2xl space-y-6">
-			<h2 class="font-mono text-xs tracking-[1em] text-white/50 uppercase">RUNWAY ARCHIVE</h2>
+	<div class="relative z-10 mx-auto mb-8 max-w-7xl px-4 md:mb-12 md:px-12 lg:mb-20 lg:px-24">
+		<div class="max-w-2xl space-y-4 md:space-y-6">
+			<h2 class="font-mono text-[10px] tracking-[0.75em] text-white/50 uppercase sm:text-xs sm:tracking-[1em]">
+				RUNWAY ARCHIVE
+			</h2>
 			<div class="h-[1px] w-40 bg-white/25"></div>
-			<p class="text-sm leading-relaxed text-white/45 md:text-base">
+			<p class="text-pretty text-sm leading-relaxed text-white/45 md:text-base">
 				Mai jos, arhiva orizontală începe cu atelierul în mișcare — apoi treci prin fiecare capitol de
 				prezentare.
 			</p>
 		</div>
 	</div>
 
-	<div class="horizontal-scroll-section relative z-10 h-[118svh] md:h-[122svh]">
+	<div
+		class="horizontal-scroll-section relative z-10 h-[min(100svh,52rem)] md:h-[118svh] lg:h-[122svh]"
+	>
 		<div class="horizontal-container flex h-full w-max">
-			<div
-				class="flex h-full w-screen shrink-0 items-center justify-center px-[8vw] pb-12 pt-2 md:px-[10vw] md:pb-16 md:pt-4"
-			>
+			<div class="relative h-full w-screen shrink-0">
+				<div class="design-horizontal-bg" aria-hidden="true">
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-mid design-horizontal-bg__line--delay-2 left-[4%] top-[16%] max-w-[min(38vw,11rem)] font-mono text-[6px] uppercase not-italic tracking-[0.28em] sm:max-w-[13rem] sm:text-[8px] sm:tracking-[0.34em] md:left-[6%] md:top-[20%]"
+					>
+						Atelier · material în lucru · probă croială · aceeași rigoare ca pe podium
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--ghost design-horizontal-bg__line--life-heavy design-horizontal-bg__line--delay-3 left-[2%] bottom-[26%] hidden font-syne text-[clamp(1.65rem,8.5vw,4.25rem)] font-black leading-[0.92] tracking-[-0.04em] sm:bottom-[30%] sm:block"
+					>
+						Milano
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--dim design-horizontal-bg__line--life-light design-horizontal-bg__line--delay-1 right-[5%] top-[24%] max-w-[min(40vw,12rem)] text-right font-sans text-[7px] font-light uppercase tracking-[0.38em] sm:text-[9px] md:top-[28%] md:max-w-[14rem]"
+					>
+						Runway · arhivă · video loop · gri ca filtru editorial
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--pose-br right-[7%] bottom-[34%] max-w-[10rem] text-right font-playfair text-[9px] font-semibold not-italic leading-snug sm:max-w-[12rem] sm:text-[11px]"
+					>
+						2024 · Maison de Mode · volum și tăietură testate în lumină rece
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--dim design-horizontal-bg__line--life-breathe design-horizontal-bg__line--delay-4 left-[10%] top-[42%] hidden max-w-[9rem] origin-center -rotate-90 font-mono text-[5px] uppercase tracking-[0.48em] lg:block lg:text-[6px]"
+					>
+						secvență atelier
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-mid design-horizontal-bg__line--delay-4 right-[12%] top-[48%] hidden max-w-[11rem] font-playfair text-[8px] italic leading-relaxed md:block md:text-[10px]"
+					>
+						Deadstock în conversație cu metal rece — nu decor, structură.
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--pose-tl right-[3%] top-[56%] hidden max-w-[9rem] text-right font-mono text-[5px] font-bold uppercase tracking-[0.42em] md:block md:text-[7px]"
+					>
+						loop · lumină rece · cadru îngust
+					</p>
+				</div>
 				<div
-					class="group relative w-full max-w-[16.25rem] sm:max-w-[17.75rem] md:max-w-[19.5rem] lg:max-w-[21rem] xl:max-w-[22.5rem]"
+					class="relative z-10 flex h-full w-full items-center justify-center px-[8vw] pb-12 pt-2 md:px-[10vw] md:pb-16 md:pt-4"
 				>
 					<div
-						class="aspect-[4/5] max-h-[52svh] w-full overflow-hidden border border-white/5 bg-neutral-900 sm:max-h-[55svh] md:max-h-[58svh]"
+						class="group relative w-full max-w-[16.25rem] sm:max-w-[17.75rem] md:max-w-[19.5rem] lg:max-w-[21rem] xl:max-w-[22.5rem]"
 					>
-						<video
-							class="h-full w-full object-cover object-center outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/35 grayscale opacity-70 transition-[filter,opacity] duration-700 ease-out group-hover:grayscale-0 group-hover:opacity-100 group-focus-within:grayscale-0 group-focus-within:opacity-100 active:grayscale-0 active:opacity-100"
-							src="/videos/about-atelier.mp4"
-							autoplay
-							muted
-							loop
-							playsinline
-							tabindex="0"
-							aria-label="Atelier — material în mișcare, Maison de Mode — atinge sau treci cu mouse-ul pentru culoare"
-						></video>
-					</div>
-					<div class="mt-5 md:mt-6">
-						<p class="mb-1.5 font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">
-							Milano / 2024
-						</p>
-						<h3
-							class="text-[1.875rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:text-4xl md:text-5xl lg:text-[3rem]"
+						<div
+							class="aspect-[4/5] max-h-[52svh] w-full overflow-hidden border border-white/5 bg-neutral-900 sm:max-h-[55svh] md:max-h-[58svh]"
 						>
-							Maison de Mode
-						</h3>
+							<video
+								class="h-full w-full object-cover object-center outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/35 grayscale opacity-70 transition-[filter,opacity] duration-700 ease-out group-hover:grayscale-0 group-hover:opacity-100 group-focus-within:grayscale-0 group-focus-within:opacity-100 active:grayscale-0 active:opacity-100"
+								src="/videos/about-atelier.mp4"
+								autoplay
+								muted
+								loop
+								playsinline
+								tabindex="0"
+								aria-label="Atelier — material în mișcare, Maison de Mode — atinge sau treci cu mouse-ul pentru culoare"
+							></video>
+						</div>
+						<div class="mt-5 md:mt-6">
+							<p class="mb-1.5 font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">
+								Milano / 2024
+							</p>
+							<h3
+								class="px-1 text-center text-[1.35rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:px-0 sm:text-4xl md:text-5xl lg:text-[3rem]"
+							>
+								Maison de Mode
+							</h3>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div
-				class="flex h-full w-screen shrink-0 items-center justify-center px-[8vw] pb-12 pt-2 md:px-[10vw] md:pb-16 md:pt-4"
-			>
+			<div class="relative h-full w-screen shrink-0">
+				<div class="design-horizontal-bg" aria-hidden="true">
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-light design-horizontal-bg__line--delay-3 left-[5%] top-[18%] max-w-[min(42vw,12rem)] font-sans text-[6px] font-thin uppercase tracking-[0.42em] sm:text-[9px] sm:tracking-[0.3em] md:left-[7%]"
+					>
+						Paris · materiale recuperate · siluetă și responsabilitate în același cadru
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--ghost design-horizontal-bg__line--life-heavy design-horizontal-bg__line--delay-1 right-[3%] top-[10%] font-syne text-[clamp(2.1rem,8vw,4rem)] font-black leading-[0.85] tracking-[-0.06em]"
+					>
+						Gala
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--dim design-horizontal-bg__line--life-mid design-horizontal-bg__line--delay-2 left-[6%] bottom-[30%] max-w-[11rem] font-mono text-[6px] uppercase tracking-[0.22em] sm:max-w-[13rem] sm:text-[8px] sm:tracking-[0.3em]"
+					>
+						Avant-garde · două corpuri · texturi care nu concurează, se completează
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--pose-br right-[8%] bottom-[22%] max-w-[10rem] text-right font-sans text-[7px] font-medium leading-snug sm:max-w-[12rem] sm:text-[10px]"
+					>
+						2023 · lumină caldă pe reciclat · prezentare sustenabilă
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--dim design-horizontal-bg__line--life-breathe design-horizontal-bg__line--delay-2 right-[14%] top-[44%] hidden origin-center -rotate-90 font-mono text-[5px] uppercase tracking-[0.5em] md:block md:text-[6px]"
+					>
+						capitol paris
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-light design-horizontal-bg__line--delay-4 left-[8%] top-[52%] hidden max-w-[12rem] font-playfair text-[9px] italic leading-relaxed sm:block sm:text-[11px]"
+					>
+						Culoare la hover — același gest ca în atelier: revezi materialul sub lumină nouă.
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--pose-tl left-[3%] top-[66%] max-w-[min(34vw,9rem)] font-mono text-[5px] font-normal uppercase tracking-[0.5em]"
+					>
+						reciclat · siluetă · dublu cadru
+					</p>
+				</div>
 				<div
-					class="w-full max-w-[16.25rem] sm:max-w-[17.75rem] md:max-w-[19.5rem] lg:max-w-[21rem] xl:max-w-[22.5rem]"
+					class="relative z-10 flex h-full w-full items-center justify-center px-[8vw] pb-12 pt-2 md:px-[10vw] md:pb-16 md:pt-4"
 				>
+					<div
+						class="w-full max-w-[16.25rem] sm:max-w-[17.75rem] md:max-w-[19.5rem] lg:max-w-[21rem] xl:max-w-[22.5rem]"
+					>
 					<div
 						class="relative aspect-[9/16] max-h-[54svh] w-full overflow-hidden border border-white/5 bg-neutral-900 sm:max-h-[57svh] md:max-h-[60svh]"
 					>
@@ -692,19 +727,58 @@
 					<div class="mt-5 md:mt-6">
 						<p class="mb-1.5 font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">Paris / 2023</p>
 						<h3
-							class="text-[1.875rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:text-4xl md:text-5xl lg:text-[3rem]"
+							class="px-1 text-center text-[1.35rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:px-0 sm:text-4xl md:text-5xl lg:text-[3rem]"
 						>
 							Avant-Garde Gala
 						</h3>
 					</div>
 				</div>
+				</div>
 			</div>
-			<div
-				class="flex h-full w-screen shrink-0 items-center justify-center px-[8vw] pb-12 pt-2 md:px-[10vw] md:pb-16 md:pt-4"
-			>
+			<div class="relative h-full w-screen shrink-0">
+				<div class="design-horizontal-bg" aria-hidden="true">
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-mid design-horizontal-bg__line--delay-1 right-[4%] top-[20%] max-w-[min(44vw,13rem)] text-right font-mono text-[6px] font-semibold uppercase tracking-[0.35em] sm:text-[8px] md:top-[24%]"
+					>
+						London · The Void Show · proiecție „Alternative Reality” pe linia podiumului
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--ghost design-horizontal-bg__line--life-heavy design-horizontal-bg__line--delay-4 left-[1%] bottom-[16%] font-syne text-[clamp(1.85rem,7.5vw,3.4rem)] font-black leading-[0.88] tracking-[-0.05em]"
+					>
+						Void
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--dim design-horizontal-bg__line--life-light design-horizontal-bg__line--delay-3 left-[7%] top-[36%] hidden max-w-[12rem] font-sans text-[7px] font-light not-italic tracking-[0.08em] sm:block sm:text-[9px]"
+					>
+						Cyberpunk temperat · contrast între golul scenei și densitatea ținutei
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-mid design-horizontal-bg__line--delay-2 right-[6%] bottom-[36%] max-w-[11rem] text-right font-playfair text-[8px] not-italic leading-snug sm:max-w-[13rem] sm:text-[11px]"
+					>
+						2023 · manifest material · fiecare trecere, o ipoteză despre garderobă
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--dim design-horizontal-bg__line--life-breathe design-horizontal-bg__line--delay-1 left-[12%] bottom-[14%] hidden max-w-[10rem] origin-center -rotate-90 font-mono text-[5px] uppercase tracking-[0.48em] lg:block lg:text-[6px]"
+					>
+						linie podium
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--pose-w left-[5%] top-[58%] max-w-[min(36vw,10rem)] font-mono text-[6px] uppercase tracking-[0.26em] md:max-w-[12rem] md:text-[8px]"
+					>
+						Metal · textil · lumină scenă — straturi citite de la distanță, apoi de aproape
+					</p>
+					<p
+						class="design-horizontal-bg__line design-horizontal-bg__line--faint design-horizontal-bg__line--life-light design-horizontal-bg__line--delay-4 right-[10%] top-[62%] hidden max-w-[10rem] text-right font-sans text-[6px] font-bold uppercase tracking-[0.24em] sm:block sm:text-[8px]"
+					>
+						proiecție · linie podium · gri editorial
+					</p>
+				</div>
 				<div
-					class="w-full max-w-[16.25rem] sm:max-w-[17.75rem] md:max-w-[19.5rem] lg:max-w-[21rem] xl:max-w-[22.5rem]"
+					class="relative z-10 flex h-full w-full items-center justify-center px-[8vw] pb-12 pt-2 md:px-[10vw] md:pb-16 md:pt-4"
 				>
+					<div
+						class="w-full max-w-[16.25rem] sm:max-w-[17.75rem] md:max-w-[19.5rem] lg:max-w-[21rem] xl:max-w-[22.5rem]"
+					>
 					<div
 						class="relative aspect-[9/16] max-h-[54svh] w-full overflow-hidden border border-white/5 bg-neutral-900 sm:max-h-[57svh] md:max-h-[60svh]"
 					>
@@ -722,11 +796,12 @@
 					<div class="mt-5 md:mt-6">
 						<p class="mb-1.5 font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">London / 2023</p>
 						<h3
-							class="text-[1.875rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:text-4xl md:text-5xl lg:text-[3rem]"
+							class="px-1 text-center text-[1.35rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:px-0 sm:text-4xl md:text-5xl lg:text-[3rem]"
 						>
 							The Void Show
 						</h3>
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>
@@ -736,7 +811,7 @@
 <!-- Editorial / portret -->
 <section
 	id="prezentare-editorial"
-	class="relative z-10 overflow-hidden bg-white px-6 py-24 text-black md:px-24 md:py-32"
+	class="relative z-10 overflow-x-hidden bg-white px-4 py-16 text-black sm:px-6 sm:py-24 md:px-24 md:py-32"
 	data-nav-bg="light"
 >
 	<div
@@ -780,11 +855,17 @@
 </section>
 
 <!-- Atelier / Products -->
-<section id="handmade" class="relative z-10 bg-[#fafafa] px-6 py-60 text-black md:px-24" data-nav-bg="light">
+<section
+	id="handmade"
+	class="relative z-10 overflow-x-hidden bg-[#fafafa] px-4 py-14 text-black sm:px-6 sm:py-24 md:px-24 md:py-60"
+	data-nav-bg="light"
+>
 	<div class="mx-auto max-w-7xl">
-		<div class="mb-40 border-b border-black/10 pb-16">
+		<div class="mb-16 border-b border-black/10 pb-10 sm:mb-24 sm:pb-14 md:mb-40 md:pb-16">
 			<div class="max-w-2xl">
-				<h2 class="mb-8 text-9xl leading-[0.8] font-black tracking-tighter uppercase md:text-[12vw]">
+				<h2
+					class="mb-5 break-words text-5xl leading-[0.82] font-black tracking-tighter uppercase sm:mb-8 sm:text-7xl md:text-9xl lg:text-[12vw]"
+				>
 					ATELIER
 				</h2>
 				<p class="font-mono text-xs tracking-[0.5em] text-neutral-500 uppercase italic">
@@ -798,19 +879,57 @@
 				<span
 					class="max-w-[19rem] text-center text-[10px] font-bold leading-relaxed tracking-[0.24em] text-neutral-700 uppercase"
 				>
-					Comandă unicat — apasă pentru Instagram Direct
+					Apasă + pentru categorii — Haine, Inele, Broșe
 				</span>
-				<a
-					href="https://www.instagram.com/direct/t/17845325352021081/"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="handmade-direct-btn group relative flex h-[4.75rem] w-[4.75rem] shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-black bg-white text-black shadow-[0_8px_32px_rgba(0,0,0,0.16)] transition-[color,background-color,box-shadow] duration-300 hover:bg-black hover:text-white hover:shadow-[0_16px_48px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-black"
-					aria-label="Deschide conversația cu Alexandra pe Instagram Direct"
-				>
-					<Plus
-						class="h-7 w-7 transition-transform duration-300 group-hover:rotate-90"
-					/>
-				</a>
+				<div class="relative flex flex-col items-center">
+					{#if handmadeFabOpen}
+						<div
+							id="handmade-fab-actions"
+							class="mb-4 flex w-full min-w-[12rem] flex-col items-stretch gap-2.5 sm:min-w-[13.5rem]"
+							role="group"
+							aria-label="Categorii atelier handmade"
+						>
+							{#each handmadeCategoryNavLinks as item, i (item.id)}
+								<div
+									in:fly={{
+										y: 14,
+										duration: 280,
+										delay: 45 + i * 58,
+										easing: cubicOut
+									}}
+								>
+									<a
+										href={resolve(item.path)}
+										class="handmade-fab-link group flex w-full items-center justify-center rounded-full border-2 border-black bg-white px-5 py-2.5 text-center text-[10px] font-bold tracking-[0.22em] text-black uppercase shadow-[0_6px_20px_rgba(0,0,0,0.1)] transition-[color,background-color,box-shadow,transform] duration-300 hover:bg-black hover:text-white hover:shadow-[0_10px_28px_rgba(0,0,0,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[4px] focus-visible:outline-black active:scale-[0.98]"
+										data-sveltekit-preload-data="hover"
+										onclick={() => {
+											handmadeFabOpen = false;
+										}}
+									>
+										{item.label}
+									</a>
+								</div>
+							{/each}
+						</div>
+					{/if}
+					<button
+						type="button"
+						class="handmade-direct-btn group relative flex h-[4.75rem] w-[4.75rem] shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-black bg-white text-black shadow-[0_8px_32px_rgba(0,0,0,0.16)] transition-[color,background-color,box-shadow] duration-300 hover:bg-black hover:text-white hover:shadow-[0_16px_48px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-black"
+						aria-expanded={handmadeFabOpen}
+						aria-controls="handmade-fab-actions"
+						aria-haspopup="true"
+						aria-label={handmadeFabOpen
+							? 'Închide meniul categoriilor'
+							: 'Deschide meniul — Haine, Inele, Broșe'}
+						onclick={toggleHandmadeFab}
+					>
+						<Plus
+							class="h-7 w-7 transition-transform duration-300 {handmadeFabOpen
+								? 'rotate-45'
+								: 'group-hover:rotate-90'}"
+						/>
+					</button>
+				</div>
 			</div>
 		</div>
 
@@ -844,7 +963,7 @@
 <!-- Colaborare -->
 <section
 	id="colaborare"
-	class="relative isolate z-10 overflow-hidden bg-[#0a0a0a] px-6 pt-10 pb-8 text-white md:px-24 md:pt-12 md:pb-10"
+	class="relative isolate z-10 overflow-x-hidden bg-[#0a0a0a] px-4 pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] text-white sm:px-6 md:px-24 md:pt-12 md:pb-10"
 	data-nav-bg="dark"
 >
 	<div
@@ -858,7 +977,7 @@
 			class="flex w-full max-w-[42rem] flex-col items-start gap-4 text-pretty md:gap-5 lg:max-w-[46rem]"
 		>
 			<h2
-				class="colaborare-headline reveal-text w-full min-w-0 text-2xl leading-[1.08] font-bold tracking-tighter uppercase sm:text-3xl md:text-4xl lg:text-5xl"
+				class="colaborare-headline reveal-text w-full min-w-0 text-balance break-words text-xl leading-[1.08] font-bold tracking-tighter uppercase sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl"
 			>
 				Construim împreună universul vestimentar.
 			</h2>
@@ -886,22 +1005,6 @@
 
 <style>
 	@reference "./layout.css";
-
-	@keyframes nav-logo-float {
-		0%,
-		100% {
-			transform: translateY(0);
-		}
-		50% {
-			transform: translateY(-3px);
-		}
-	}
-
-	.nav-logo {
-		display: inline-block;
-		animation: nav-logo-float 4s ease-in-out infinite;
-		will-change: transform;
-	}
 
 	/* CTA Instagram Direct — secțiunea #handmade */
 	@keyframes handmade-direct-pulse {
@@ -971,10 +1074,168 @@
 	.colaborare-headline {
 		text-wrap: balance;
 	}
-	@media (min-width: 1024px) {
+	@media (min-width: 1280px) {
 		.colaborare-headline {
 			white-space: nowrap;
 			font-size: clamp(2rem, 3.25vw, 3.25rem);
+		}
+	}
+
+	/* #design — runway orizontal: text în fundal, textură + mișcare neuniformă */
+	.design-horizontal-bg {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+		contain: layout style;
+	}
+
+	@keyframes design-hbg-life-heavy {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) rotate(-0.8deg) scale(1);
+			opacity: 1;
+		}
+		22% {
+			transform: translate3d(14px, -10px, 0) rotate(0.6deg) scale(1.045);
+			opacity: 0.88;
+		}
+		55% {
+			transform: translate3d(-12px, 12px, 0) rotate(-0.4deg) scale(0.97);
+			opacity: 0.94;
+		}
+		78% {
+			transform: translate3d(8px, 6px, 0) rotate(0.35deg) scale(1.02);
+			opacity: 0.9;
+		}
+	}
+
+	@keyframes design-hbg-life-mid {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) rotate(0.6deg) scale(1);
+			opacity: 1;
+		}
+		33% {
+			transform: translate3d(-10px, 7px, 0) rotate(-0.5deg) scale(1.03);
+			opacity: 0.82;
+		}
+		66% {
+			transform: translate3d(8px, -6px, 0) rotate(0.35deg) scale(0.98);
+			opacity: 0.91;
+		}
+	}
+
+	@keyframes design-hbg-life-light {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: translate3d(5px, -8px, 0) scale(1.025);
+			opacity: 0.78;
+		}
+	}
+
+	@keyframes design-hbg-life-breathe {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		35% {
+			opacity: 0.62;
+		}
+		65% {
+			opacity: 0.88;
+		}
+	}
+
+	.design-horizontal-bg__line {
+		position: absolute;
+		margin: 0;
+		user-select: none;
+		text-wrap: balance;
+		text-rendering: geometricPrecision;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.design-horizontal-bg__line--faint {
+		color: rgb(175 175 175 / 0.36);
+		text-shadow:
+			0 1px 0 rgb(0 0 0 / 0.45),
+			0 0 1px rgb(255 255 255 / 0.06),
+			0 0 28px rgb(0 0 0 / 0.35);
+	}
+
+	.design-horizontal-bg__line--dim {
+		color: rgb(155 155 155 / 0.5);
+		text-shadow:
+			0 1px 0 rgb(0 0 0 / 0.4),
+			0 0 1px rgb(255 255 255 / 0.05),
+			0 0 22px rgb(0 0 0 / 0.3);
+	}
+
+	.design-horizontal-bg__line--ghost {
+		color: rgb(130 130 130 / 0.2);
+		text-shadow:
+			0 2px 0 rgb(0 0 0 / 0.5),
+			0 0 2px rgb(255 255 255 / 0.04),
+			0 0 40px rgb(0 0 0 / 0.25);
+	}
+
+	.design-horizontal-bg__line--life-heavy {
+		animation: design-hbg-life-heavy 24s ease-in-out infinite;
+		will-change: transform, opacity;
+	}
+
+	.design-horizontal-bg__line--life-mid {
+		animation: design-hbg-life-mid 17s ease-in-out infinite;
+		will-change: transform, opacity;
+	}
+
+	.design-horizontal-bg__line--life-light {
+		animation: design-hbg-life-light 12s ease-in-out infinite;
+		will-change: transform, opacity;
+	}
+
+	.design-horizontal-bg__line--life-breathe {
+		animation: design-hbg-life-breathe 13s ease-in-out infinite;
+		will-change: opacity;
+	}
+
+	.design-horizontal-bg__line--delay-1 {
+		animation-delay: -2.5s;
+	}
+	.design-horizontal-bg__line--delay-2 {
+		animation-delay: -6s;
+	}
+	.design-horizontal-bg__line--delay-3 {
+		animation-delay: -11s;
+	}
+	.design-horizontal-bg__line--delay-4 {
+		animation-delay: -15s;
+	}
+
+	.design-horizontal-bg__line--pose-tl {
+		transform: rotate(-2.4deg) translate3d(-3px, 2px, 0);
+	}
+	.design-horizontal-bg__line--pose-br {
+		transform: rotate(1.8deg) translate3d(4px, -1px, 0);
+	}
+	.design-horizontal-bg__line--pose-w {
+		transform: rotate(-4deg) translate3d(2px, 0, 0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.design-horizontal-bg__line--life-heavy,
+		.design-horizontal-bg__line--life-mid,
+		.design-horizontal-bg__line--life-light,
+		.design-horizontal-bg__line--life-breathe {
+			animation: none;
+			will-change: auto;
+			opacity: 1;
 		}
 	}
 
@@ -1010,6 +1271,23 @@
 	}
 	.page-magazine__columns p:last-child {
 		margin-bottom: 0;
+	}
+	@media (max-width: 639.98px) {
+		.design-magazine-track {
+			min-height: auto;
+			padding: 1rem 0.5rem 2.25rem 0.75rem;
+		}
+		.page-magazine__columns {
+			column-count: 1;
+			column-gap: 0.75rem;
+			font-size: 0.6875rem;
+			line-height: 1.82;
+			text-align: left;
+		}
+		.page-magazine__columns--in-design {
+			min-height: auto;
+			padding-top: 0.5rem;
+		}
 	}
 	@media (min-width: 640px) {
 		.page-magazine__columns {

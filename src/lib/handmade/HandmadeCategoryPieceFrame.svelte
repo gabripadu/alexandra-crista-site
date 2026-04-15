@@ -53,7 +53,7 @@
 			<img
 				src={current.src}
 				alt={current.alt}
-				class="handmade-rebel-frame__img pointer-events-none h-full w-full object-cover grayscale transition-[filter,transform,opacity] duration-500 ease-out group-hover:scale-[1.04] group-hover:grayscale-0"
+				class="handmade-rebel-frame__img pointer-events-none h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
 				loading={eager ? 'eager' : 'lazy'}
 				draggable="false"
 			/>

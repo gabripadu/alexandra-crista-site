@@ -19,6 +19,8 @@
 		frames: { src: string; alt: string }[];
 		index: number;
 		pieceIndex: number;
+		pieceTitle: string;
+		pieceDescription?: string;
 	};
 
 	let lightbox = $state<LightboxState | null>(null);
@@ -28,7 +30,13 @@
 		index: number;
 		pieceIndex: number;
 	}) {
-		lightbox = { ...detail };
+		const slide = category.slides[detail.pieceIndex];
+		const pieceTitle = slide?.title ?? `Piesă ${detail.pieceIndex + 1}`;
+		lightbox = {
+			...detail,
+			pieceTitle,
+			pieceDescription: slide?.description
+		};
 	}
 
 	function closeLightbox() {
@@ -80,7 +88,9 @@
 	/>
 </svelte:head>
 
-<section class="relative px-6 pb-24 md:px-12 md:pb-32 lg:px-24">
+<section
+	class="relative overflow-x-hidden px-4 pb-16 sm:px-6 sm:pb-24 md:px-12 md:pb-32 lg:px-24"
+>
 	<div
 		class="pointer-events-none absolute top-8 right-0 text-[12vw] font-black uppercase leading-none text-black/[0.04]"
 	>
@@ -92,7 +102,7 @@
 			Atelier · {category.serial.replace('S/N: ', '')}
 		</p>
 		<h1
-			class="font-syne mt-4 max-w-4xl text-5xl font-black tracking-tighter uppercase md:mt-6 md:text-7xl lg:text-8xl"
+			class="font-syne mt-4 max-w-full text-balance break-words text-4xl font-black tracking-tighter uppercase sm:text-5xl md:mt-6 md:max-w-4xl md:text-7xl lg:text-8xl"
 		>
 			{category.title}
 		</h1>
@@ -101,9 +111,19 @@
 		>
 			{intro}
 		</p>
-		<p class="font-syne mt-4 text-sm font-bold tracking-wider text-neutral-800 uppercase md:text-base">
-			{category.priceLabel}
-		</p>
+		<a
+			href="https://www.instagram.com/direct/t/17845325352021081/"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="font-syne group mt-6 inline-flex w-full max-w-xl items-center justify-center gap-3 border-2 border-black bg-black px-6 py-4 text-center text-xs font-bold tracking-[0.22em] text-white uppercase shadow-[0_8px_28px_rgba(0,0,0,0.18)] transition-colors duration-300 hover:bg-white hover:text-black hover:shadow-[0_12px_36px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black sm:w-auto sm:justify-start md:mt-8 md:px-8 md:py-4 md:text-sm md:tracking-[0.28em]"
+			aria-label="Comandă pe Instagram: {category.priceLabel}"
+		>
+			<span class="text-[11px] md:text-sm">{category.priceLabel}</span>
+			<ArrowUpRight
+				class="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:rotate-45"
+				aria-hidden="true"
+			/>
+		</a>
 
 		<div class="handmade-piece-list mt-14 flex flex-col gap-12 md:mt-20 md:gap-16 lg:gap-20">
 			{#each category.slides as slide, i (slide.src + String(i))}
@@ -132,21 +152,20 @@
 						</p>
 						<h2 class="font-syne mt-3 font-bold tracking-tighter md:mt-4">
 							{#if pieceTitleLines && pieceTitleLines.length === 2}
-								<span class="block text-2xl leading-[1.1] md:text-3xl">{pieceTitleLines[0]}:</span>
+								<span class="block text-balance break-words text-xl leading-[1.1] sm:text-2xl md:text-3xl"
+									>{pieceTitleLines[0]}:</span
+								>
 								<span
-									class="mt-1.5 block text-xl leading-snug text-neutral-800 md:mt-2 md:text-2xl md:leading-tight"
+									class="mt-1.5 block text-balance break-words text-lg leading-snug text-neutral-800 sm:text-xl md:mt-2 md:text-2xl md:leading-tight"
 								>
 									{pieceTitleLines[1]}
 								</span>
 							{:else}
-								<span class="block text-2xl md:text-3xl">{pieceTitle}</span>
+								<span class="block text-balance break-words text-xl sm:text-2xl md:text-3xl"
+									>{pieceTitle}</span
+								>
 							{/if}
 						</h2>
-						{#if !slide.description}
-							<p class="mt-2 text-xs leading-relaxed text-neutral-500 italic md:text-sm">
-								{slide.alt}
-							</p>
-						{/if}
 						{#if slide.description}
 							<p
 								class="mt-5 max-w-xl text-sm leading-relaxed text-neutral-700 md:mt-6 md:text-base"
@@ -154,27 +173,9 @@
 								{slide.description}
 							</p>
 						{:else}
-							<div
-								class="handmade-piece-placeholder mt-5 max-w-xl rounded-sm border border-dashed border-black/15 bg-neutral-50/80 px-4 py-5 md:mt-6 md:px-5 md:py-6"
-							>
-								<p class="font-mono text-[10px] tracking-wider text-neutral-400 uppercase">
-									Detalii piesă
-								</p>
-								<p class="mt-2 text-sm leading-relaxed text-neutral-500 md:text-[0.9375rem]">
-									Spațiu pentru descriere. Poți adăuga câmpurile
-									<code class="rounded bg-black/[0.06] px-1 py-0.5 font-mono text-[11px]"
-										>title</code
-									>
-									și
-									<code class="rounded bg-black/[0.06] px-1 py-0.5 font-mono text-[11px]"
-										>description</code
-									>
-									lângă această imagine în
-									<code class="rounded bg-black/[0.06] px-1 py-0.5 font-mono text-[11px]"
-										>gallery.ts</code
-									>.
-								</p>
-							</div>
+							<p class="mt-5 max-w-xl text-sm leading-relaxed text-neutral-600 italic md:mt-6 md:text-base">
+								{slide.alt}
+							</p>
 						{/if}
 					</div>
 				</article>
@@ -207,14 +208,14 @@
 		class="handmade-lightbox-backdrop fixed inset-0 z-[300] flex items-center justify-center bg-black/86 p-4 backdrop-blur-[2px]"
 		role="dialog"
 		aria-modal="true"
-		aria-label="Vizualizare imagine"
+		aria-label={`Vizualizare: ${lightbox.pieceTitle}`}
 		tabindex="-1"
 		onclick={(e) => {
 			if (e.target === e.currentTarget) closeLightbox();
 		}}
 	>
 		<div
-			class="relative max-h-[min(90vh,920px)] w-full max-w-[min(96vw,56rem)]"
+			class="relative my-auto flex min-h-0 w-full max-w-[min(100vw-1rem,56rem)] flex-col sm:max-w-[min(96vw,56rem)]"
 			onclick={(e) => e.stopPropagation()}
 			role="presentation"
 		>
@@ -244,12 +245,30 @@
 					<ChevronRight class="h-7 w-7 md:h-8 md:w-8" aria-hidden="true" />
 				</button>
 			{/if}
-			<img
-				src={lbFrame.src}
-				alt={lbFrame.alt}
-				class="max-h-[min(88vh,900px)] w-full rounded-sm object-contain shadow-2xl ring-1 ring-white/10"
-				draggable="false"
-			/>
+			<div class="relative min-h-0 flex-1">
+				<img
+					src={lbFrame.src}
+					alt={lbFrame.alt}
+					class="max-h-[min(72vh,820px)] w-full rounded-sm object-contain shadow-2xl ring-1 ring-white/10"
+					draggable="false"
+				/>
+			</div>
+			<div
+				class="mt-3 max-h-[32vh] w-full shrink-0 overflow-y-auto px-0.5 text-center sm:mt-4 sm:max-h-[28vh] md:mt-5 md:max-h-[22vh]"
+			>
+				<p class="font-syne text-sm font-bold leading-snug text-white sm:text-base md:text-lg">
+					{lightbox.pieceTitle}
+				</p>
+				{#if lightbox.pieceDescription}
+					<p class="mt-2 text-pretty text-left text-xs leading-relaxed text-white/85 sm:text-sm md:text-base">
+						{lightbox.pieceDescription}
+					</p>
+				{:else}
+					<p class="mt-2 text-pretty text-left text-xs leading-relaxed text-white/75 italic sm:text-sm md:text-base">
+						{lbFrame.alt}
+					</p>
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}
