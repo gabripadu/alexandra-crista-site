@@ -578,19 +578,6 @@
 		</p>
 		</div>
 	</div>
-	<div class="relative z-10 mx-auto mb-8 max-w-7xl px-4 md:mb-12 md:px-12 lg:mb-20 lg:px-24">
-		<div class="max-w-2xl space-y-4 md:space-y-6">
-			<h2 class="font-mono text-[10px] tracking-[0.75em] text-white/50 uppercase sm:text-xs sm:tracking-[1em]">
-				RUNWAY ARCHIVE
-			</h2>
-			<div class="h-[1px] w-40 bg-white/25"></div>
-			<p class="text-pretty text-sm leading-relaxed text-white/45 md:text-base">
-				Mai jos, arhiva orizontală începe cu atelierul în mișcare — apoi treci prin fiecare capitol de
-				prezentare.
-			</p>
-		</div>
-	</div>
-
 	<div
 		class="horizontal-scroll-section relative z-10 h-[min(100svh,52rem)] md:h-[118svh] lg:h-[122svh]"
 	>
@@ -654,11 +641,11 @@
 							></video>
 						</div>
 						<div class="mt-5 md:mt-6">
-							<p class="mb-1.5 font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">
+							<p class="mb-1.5 text-center font-mono text-[12px] text-white/45 uppercase tracking-[0.26em] md:text-[14px]">
 								Milano / 2024
 							</p>
 							<h3
-								class="px-1 text-center text-[1.35rem] font-black leading-[0.98] tracking-tighter text-white uppercase sm:px-0 sm:text-4xl md:text-5xl lg:text-[3rem]"
+								class="px-1 text-center text-[1.9rem] font-black leading-[0.95] tracking-tighter text-white uppercase sm:px-0 sm:text-[2.7rem] md:text-[3.8rem] lg:text-[4.8rem]"
 							>
 								Maison de Mode
 							</h3>
@@ -862,9 +849,9 @@
 >
 	<div class="mx-auto max-w-7xl">
 		<div class="mb-16 border-b border-black/10 pb-10 sm:mb-24 sm:pb-14 md:mb-40 md:pb-16">
-			<div class="max-w-2xl">
+			<div class="w-full max-w-none md:max-w-4xl lg:max-w-5xl">
 				<h2
-					class="mb-5 break-words text-5xl leading-[0.82] font-black tracking-tighter uppercase sm:mb-8 sm:text-7xl md:text-9xl lg:text-[12vw]"
+					class="mb-5 text-5xl leading-[0.82] font-black tracking-tighter uppercase sm:mb-8 sm:text-7xl md:text-9xl md:whitespace-nowrap lg:text-[clamp(3.5rem,10vw,9rem)]"
 				>
 					ATELIER
 				</h2>
@@ -1161,6 +1148,11 @@
 		-webkit-font-smoothing: antialiased;
 	}
 
+	/* Fundalul editorial devine mai lizibil (12/14/16px) */
+	.design-horizontal-bg__line:not(.design-horizontal-bg__line--ghost) {
+		font-size: clamp(0.75rem, 1.05vw, 1rem) !important;
+	}
+
 	.design-horizontal-bg__line--faint {
 		color: rgb(175 175 175 / 0.36);
 		text-shadow:
@@ -1432,28 +1424,81 @@
 	}
 
 	/* #design — fragmente de fundal (lizibile, discrete) */
+	@keyframes design-whisper-drift-a {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+			opacity: 1;
+		}
+		50% {
+			transform: translate3d(8px, -6px, 0);
+			opacity: 0.82;
+		}
+	}
+	@keyframes design-whisper-drift-b {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+			opacity: 0.95;
+		}
+		50% {
+			transform: translate3d(-7px, 8px, 0);
+			opacity: 0.78;
+		}
+	}
+	@keyframes design-whisper-drift-c {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+			opacity: 0.9;
+		}
+		50% {
+			transform: translate3d(5px, 5px, 0);
+			opacity: 0.72;
+		}
+	}
+
 	.design-bg-whisper {
 		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		font-size: 0.625rem;
-		line-height: 1.65;
-		letter-spacing: 0.09em;
+		font-size: 0.875rem;
+		line-height: 1.55;
+		letter-spacing: 0.06em;
 		color: rgb(170 170 170 / 0.62);
+		animation: design-whisper-drift-a 18s ease-in-out infinite;
+		will-change: transform, opacity;
 	}
 	@media (min-width: 640px) {
 		.design-bg-whisper {
-			font-size: 0.6875rem;
+			font-size: 0.875rem;
 		}
 	}
 	@media (min-width: 768px) {
 		.design-bg-whisper {
-			font-size: 0.75rem;
+			font-size: 0.875rem;
 		}
 	}
 	.design-bg-whisper--dim {
 		color: rgb(165 165 165 / 0.52);
+		font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+		font-size: 0.75rem;
+		letter-spacing: 0.08em;
+		animation: design-whisper-drift-b 14s ease-in-out infinite;
 	}
 	.design-bg-whisper--faint {
 		color: rgb(155 155 155 / 0.42);
+		font-family: 'Playfair Display', Georgia, serif;
+		font-size: 1rem;
+		letter-spacing: 0.04em;
+		animation: design-whisper-drift-c 22s ease-in-out infinite;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.design-bg-whisper,
+		.design-bg-whisper--dim,
+		.design-bg-whisper--faint {
+			animation: none;
+			will-change: auto;
+		}
 	}
 
 	.loader-bar {

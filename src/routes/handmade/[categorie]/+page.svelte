@@ -9,6 +9,7 @@
 	let { data } = $props();
 	const category = $derived(data.category);
 	const intro = $derived(data.intro);
+const instagramOrderUrl = 'https://www.instagram.com/direct/t/17845325352021081/';
 
 	function slideFrames(slide: HandmadeSlide): { src: string; alt: string }[] {
 		if (slide.carousel && slide.carousel.length > 0) return slide.carousel;
@@ -112,7 +113,7 @@
 			{intro}
 		</p>
 		<a
-			href="https://www.instagram.com/direct/t/17845325352021081/"
+			href={instagramOrderUrl}
 			target="_blank"
 			rel="noopener noreferrer"
 			class="font-syne group mt-6 inline-flex w-full max-w-xl items-center justify-center gap-3 border-2 border-black bg-black px-6 py-4 text-center text-xs font-bold tracking-[0.22em] text-white uppercase shadow-[0_8px_28px_rgba(0,0,0,0.18)] transition-colors duration-300 hover:bg-white hover:text-black hover:shadow-[0_12px_36px_rgba(0,0,0,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black sm:w-auto sm:justify-start md:mt-8 md:px-8 md:py-4 md:text-sm md:tracking-[0.28em]"
@@ -125,14 +126,14 @@
 			/>
 		</a>
 
-		<div class="handmade-piece-list mt-14 flex flex-col gap-12 md:mt-20 md:gap-16 lg:gap-20">
+		<div class="handmade-piece-list mt-14 flex flex-col gap-8 md:mt-20 md:gap-10 lg:gap-12">
 			{#each category.slides as slide, i (slide.src + String(i))}
 				{@const frameVariant = (i % 9) + 1}
 				{@const pieceLabel = `${category.serial.replace('S/N: ', '')} · ${String(i + 1).padStart(2, '0')}`}
 				{@const pieceTitle = slide.title ?? `Piesă ${i + 1}`}
 				{@const pieceTitleLines = pieceTitle.includes(':') ? pieceTitle.split(/:\s*/, 2) : null}
 				<article
-					class="handmade-piece-card flex flex-col items-center gap-8 border-b border-black/[0.06] pb-12 last:border-b-0 last:pb-0 md:flex-row md:items-start md:gap-10 lg:gap-14"
+					class="handmade-piece-card group flex flex-col items-start gap-7 rounded-2xl border border-black/[0.08] bg-white/75 p-4 shadow-[0_8px_26px_rgba(0,0,0,0.05)] transition-[transform,box-shadow,border-color] duration-300 md:flex-row md:items-start md:gap-10 md:p-6 md:hover:-translate-y-1 md:hover:border-black/20 md:hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] lg:gap-12"
 				>
 					<HandmadeCategoryPieceFrame
 						frames={slideFrames(slide)}
@@ -144,13 +145,11 @@
 						paused={lightbox?.pieceIndex === i}
 						onOpenLightbox={openLightbox}
 					/>
-					<div
-						class="handmade-piece-info w-full min-w-0 flex-1 md:border-l md:border-black/10 md:pl-8 lg:pl-10"
-					>
+					<div class="handmade-piece-info w-full min-w-0 flex-1">
 						<p class="font-mono text-[9px] tracking-[0.35em] text-neutral-400 uppercase md:text-[10px]">
 							{pieceLabel}
 						</p>
-						<h2 class="font-syne mt-3 font-bold tracking-tighter md:mt-4">
+						<h2 class="font-syne mt-3 font-bold tracking-tighter transition-transform duration-300 md:mt-4 md:group-hover:translate-x-0.5">
 							{#if pieceTitleLines && pieceTitleLines.length === 2}
 								<span class="block text-balance break-words text-xl leading-[1.1] sm:text-2xl md:text-3xl"
 									>{pieceTitleLines[0]}:</span
@@ -177,6 +176,19 @@
 								{slide.alt}
 							</p>
 						{/if}
+						<a
+							href={instagramOrderUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="font-syne group mt-6 inline-flex w-full items-center justify-center gap-2.5 border-2 border-black bg-black px-6 py-3 text-center text-[10px] font-bold tracking-[0.22em] text-white uppercase transition-[color,background-color,transform] duration-300 hover:bg-white hover:text-black hover:scale-[1.02] active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black sm:w-auto sm:justify-start"
+							aria-label={`Achiziționează pe Instagram: ${pieceTitle}`}
+						>
+							Achiziționează
+							<ArrowUpRight
+								class="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:rotate-45"
+								aria-hidden="true"
+							/>
+						</a>
 					</div>
 				</article>
 			{/each}
@@ -189,7 +201,7 @@
 				Pentru o comandă unicat sau detalii despre materiale și termene, poți scrie direct pe Instagram.
 			</p>
 			<a
-				href="https://www.instagram.com/direct/t/17845325352021081/"
+				href={instagramOrderUrl}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="font-syne inline-flex items-center gap-3 border-2 border-black bg-black px-8 py-4 text-[10px] font-bold tracking-[0.28em] text-white uppercase transition-colors duration-300 hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"

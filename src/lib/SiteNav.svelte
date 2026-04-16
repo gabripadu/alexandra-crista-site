@@ -11,6 +11,7 @@
 	let handmadeNavOpen = $state(false);
 	let mobileNavOpen = $state(false);
 	let handmadeNavRoot: HTMLDivElement | undefined;
+	let handmadeTouchHandled = false;
 
 	afterNavigate(() => {
 		mobileNavOpen = false;
@@ -54,7 +55,7 @@
 		requestAnimationFrame(() => updateNavContrast());
 
 		function closeHandmadeMenu(e: MouseEvent) {
-			if (!handmadeNavRoot) return;
+			if (!handmadeNavOpen || !handmadeNavRoot) return;
 			if (!handmadeNavRoot.contains(e.target as Node)) {
 				handmadeNavOpen = false;
 			}
@@ -62,14 +63,14 @@
 		function onKey(e: KeyboardEvent) {
 			if (e.key === 'Escape') handmadeNavOpen = false;
 		}
-		document.addEventListener('click', closeHandmadeMenu);
+		document.addEventListener('click', closeHandmadeMenu, true);
 		window.addEventListener('keydown', onKey);
 
 		return () => {
 			window.removeEventListener('scroll', updateNavContrast);
 			window.removeEventListener('resize', updateNavContrast);
 			window.removeEventListener('ac-nav-refresh', updateNavContrast);
-			document.removeEventListener('click', closeHandmadeMenu);
+			document.removeEventListener('click', closeHandmadeMenu, true);
 			window.removeEventListener('keydown', onKey);
 		};
 	});
@@ -96,26 +97,50 @@
 		<div
 			class="hidden flex-wrap items-center justify-end gap-x-8 gap-y-2 text-[9px] font-bold tracking-[0.28em] uppercase md:flex lg:gap-x-10 lg:text-[10px] lg:tracking-[0.3em]"
 		>
-			<a href={homeHash('about')} class="transition-opacity hover:opacity-50">Poveste</a>
 			<a href={homeHash('design')} class="transition-opacity hover:opacity-50">Design</a>
+			<a
+				href={localizeHref(resolve('/handmade'))}
+				class="transition-opacity hover:opacity-50"
+				data-sveltekit-preload-data="hover"
+			>
+				Atelier
+			</a>
 			<div class="relative" bind:this={handmadeNavRoot}>
 				<button
 					type="button"
 					id="nav-handmade-trigger"
-					class="m-0 cursor-pointer border-0 bg-transparent p-0 text-left text-[9px] font-bold tracking-[0.28em] text-current uppercase transition-opacity hover:opacity-50 lg:text-[10px] lg:tracking-[0.3em]"
+					class="nav-handmade-trigger m-0 cursor-pointer border-0 bg-transparent p-0 text-left text-[9px] font-bold tracking-[0.28em] text-current uppercase transition-opacity lg:text-[10px] lg:tracking-[0.3em]"
 					aria-expanded={handmadeNavOpen}
 					aria-haspopup="true"
 					aria-controls="nav-handmade-menu"
 					aria-label={handmadeNavOpen
 						? 'Închide meniul Handmade'
 						: 'Deschide categoriile Handmade: Haine, Inele, Broșe'}
+					onpointerdown={(e) => {
+						if (e.pointerType !== 'touch') return;
+						e.preventDefault();
+						e.stopPropagation();
+						handmadeTouchHandled = true;
+						handmadeNavOpen = !handmadeNavOpen;
+					}}
 					onclick={(e) => {
+						if (handmadeTouchHandled) {
+							handmadeTouchHandled = false;
+							return;
+						}
 						e.stopPropagation();
 						handmadeNavOpen = !handmadeNavOpen;
 					}}
 				>
 					Handmade
 				</button>
+				<span
+					class="pointer-events-none absolute top-full left-1/2 mt-1 -translate-x-1/2 whitespace-nowrap text-[8px] font-bold tracking-[0.22em] uppercase {navOnLightBg
+						? 'text-black/70'
+						: 'text-white/80'}"
+				>
+					Vezi colecțiile
+				</span>
 				{#if handmadeNavOpen}
 					<div
 						id="nav-handmade-menu"
@@ -144,7 +169,6 @@
 					</div>
 				{/if}
 			</div>
-			<a href={homeHash('colaborare')} class="transition-opacity hover:opacity-50">Colaborare</a>
 		</div>
 		<button
 			type="button"
@@ -172,30 +196,39 @@
 					: ''} {navOnLightBg ? 'bg-black' : 'bg-white'}"
 			></span>
 		</button>
-		<a
-			href="https://www.instagram.com/alexandracrista_designs/"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="magnetic-target group flex h-11 w-11 items-center justify-center rounded-full border transition-[color,background-color,border-color] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:h-12 md:w-12 {navOnLightBg
-				? 'border-black/25 text-black hover:border-black hover:bg-black hover:text-white focus-visible:outline-black'
-				: 'border-white/25 text-white hover:border-white hover:bg-white hover:text-black focus-visible:outline-white'}"
-			aria-label="Instagram — profilul Alexandra Crîsta (@alexandracrista_designs)"
-		>
-			<svg
-				class="h-[1.35rem] w-[1.35rem] shrink-0 transition-transform duration-300 group-hover:scale-105 md:h-6 md:w-6"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.65"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
+		<div class="flex flex-col items-center">
+			<a
+				href="https://www.instagram.com/alexandracrista_designs/"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="magnetic-target group flex h-11 w-11 items-center justify-center rounded-full border transition-[color,background-color,border-color] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:h-12 md:w-12 {navOnLightBg
+					? 'border-black/25 text-black hover:border-black hover:bg-black hover:text-white focus-visible:outline-black'
+					: 'border-white/25 text-white hover:border-white hover:bg-white hover:text-black focus-visible:outline-white'}"
+				aria-label="Instagram — profilul Alexandra Crîsta (@alexandracrista_designs)"
 			>
-				<rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-				<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-				<line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-			</svg>
-		</a>
+				<svg
+					class="h-[1.35rem] w-[1.35rem] shrink-0 transition-transform duration-300 group-hover:scale-105 md:h-6 md:w-6"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.65"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+					<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+					<line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+				</svg>
+			</a>
+			<span
+				class="mt-1 hidden text-[8px] font-bold tracking-[0.22em] uppercase md:block {navOnLightBg
+					? 'text-black/70'
+					: 'text-white/80'}"
+			>
+				Colaborare
+			</span>
+		</div>
 	</div>
 	{#if mobileNavOpen}
 		<button
@@ -232,6 +265,16 @@
 				onclick={() => (mobileNavOpen = false)}
 			>
 				Design
+			</a>
+			<a
+				href={localizeHref(resolve('/handmade'))}
+				class="border-b py-3.5 text-xs font-bold tracking-[0.28em] uppercase transition-opacity active:opacity-70 {navOnLightBg
+					? 'border-black/10'
+					: 'border-white/15'}"
+				data-sveltekit-preload-data="hover"
+				onclick={() => (mobileNavOpen = false)}
+			>
+				Atelier
 			</a>
 			<p
 				class="mt-4 mb-1 font-mono text-[9px] tracking-[0.35em] text-neutral-500 uppercase"
@@ -273,6 +316,16 @@
 </nav>
 
 <style>
+	.nav-handmade-trigger {
+		touch-action: manipulation;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		:global(#nav-handmade-trigger.nav-handmade-trigger:hover) {
+			opacity: 0.5;
+		}
+	}
+
 	@keyframes nav-logo-float {
 		0%,
 		100% {
